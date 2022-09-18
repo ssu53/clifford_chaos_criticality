@@ -1,0 +1,475 @@
+\documentclass[9pt]{beamer}
+% \documentclass[handout,9pt]{beamer}
+\usetheme{Antibes}
+\usecolortheme{beaver}
+% \setbeamertemplate{headline}[default]
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+\useoutertheme[subsection=false]{miniframes}
+\setbeamertemplate{itemize item}{\tiny\color{black}$\blacksquare$}
+
+\setbeamersize{text margin left=0.7cm, text margin right=0.7cm} 
+
+\usepackage{amsmath}   
+% \usepackage{amsfonts}
+\usepackage{physics}    
+% \usepackage{graphicx}
+\usepackage{subfigure}
+%\usepackage{caption}
+% \usepackage{verbatim}
+% \usepackage{float}
+%\usepackage{svg}
+
+\usepackage{csquotes}
+% \usepackage{slashed}
+
+\setlength\parindent{0pt}
+\setlength\parskip{5pt}
+
+\usepackage{makecell}
+
+\renewcommand{\arraystretch}{1.5}
+
+
+
+% \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+% \DeclareMathOperator{\lagr}{\mathcal{L}}
+% \DeclareMathOperator{\ham}{\mathcal{H}}
+
+
+\addtolength{\skip\footins}{1pc plus 3pt}
+
+\title{\huge Chaos and Measurement-Induced Criticality on Stabiliser Circuits}
+\subtitle{}
+\author[1]{\large Shiye Su\inst{1}\\ \quad Advisors: Sarang Gopalakrishnan,\inst{2} David Huse\inst{1}}
+\institute{\inst{1} Department of Physics, Princeton University \\
+		   \inst{2} The City University of New York}
+%\date{\today}
+\date{}
+
+
+\begin{document}
+
+
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+
+\section{L'Ordre du Jour}
+
+\begin{frame}
+\frametitle{L'Ordre du Jour}
+
+{\centering
+Does the system thermalise? \\
+How does this look in terms of entanglement? RMT? \\
+}
+
+\pause
+\vspace{0.5cm}
+Setting: random quantum circuits
+\begin{itemize}
+\item Preliminaries
+\item Measurement-induced entanglement transition
+\item Clifford spectral statistics
+\end{itemize}
+
+
+
+\end{frame}
+
+% my thesis is situated within the study of non-equilibrium many body physics. the questions we're interested in are for example, will a system evolving under certain conditions thermalise? how is this behaviour reflected in the entanglement growth, and signatures from random matrix theory? it turns out that a system evolving unitarily, subject to repeated projective local measurements, exhibits a critical transition: phase that between weak and strong entanglement growth - we'll make this statement more precise later. this is called the measurement-induced criticality. 
+
+\section{Preliminaries}
+\subsection{}
+
+\begin{frame}
+\frametitle{Pauli group and stabilisers}
+
+Pauli group
+\begin{equation}
+\mathcal{P}_1 \equiv \{\pm I, \pm i I, \pm X, \pm i X, \pm Y, \pm i Y, \pm Z, \pm i Z\}.
+\end{equation}
+
+\begin{equation}
+\mathcal{P}_n = \mathcal{P}_1^{\otimes n}
+\end{equation} 
+
+% \pause
+% $\{\mathcal{P}_n / U(1)\}$ is a basis for $(\mathbb{C}^{2\times2})^{\otimes n} = \mathbb{C}^{2^n\times2^n}$ 
+
+\pause
+\vspace{0.5cm}
+Stabiliser set $S \subset \mathcal{P}_n$ for state subspace $V_S$
+\begin{equation}
+V_S = \{\ket{\psi} \ | \ s \ket{\psi} = \ket{\psi} \quad \forall \ s \in S \}
+\end{equation}
+
+$n$-qubit stabiliser state (mod phase) is fully specified by $n$ Hermitian stabilisers.
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Clifford gates}
+
+Normaliser in the unitaries of $\mathcal{P}_n$  
+\begin{equation}
+C_n = \{U \in U_{2^n} \ | \ U^\dagger \mathcal{P}_n U = \mathcal{P}_n\} / U(1)
+\end{equation}
+
+\pause
+Gottesman-Knill Theorem
+\begin{displayquote}
+Quantum computation involving only Clifford gates and measurements of Pauli group observables on stabiliser states can be classically simulated in polynomial time.
+\end{displayquote}
+% (Pauli strings have $\mathbb{Z}_2$ representation.)
+
+\pause 
+Qualitatively similar dynamics to Haar unitaries. Unitary 3-Design. 
+% For $t\leq3$ but not $t\geq4$
+% \begin{equation}
+% \frac{1}{K} \sum_{k=1}^K P_{(t,t)}(U_k) = \int_{\mathcal{U}_d} \dd{U} P_{(t,t)} (U)
+% \end{equation}
+
+\end{frame}
+
+% Most generic requirement of quantum gate: unitarity.
+% We also want: stabiliser states map to other stabiliser states
+
+% Clifford gates reproduce Haar unitary averages of the $t$-th moment, for $t \leq 3$ (but not $t\geq4$).
+
+% Aaronson and Gottesman algorithm
+% pauli string multiplication implemented by binary addition, nonlinear phase update
+% won't discuss these algorithms for gate updates, measurements, and entanglement entropy
+
+
+
+
+
+\begin{frame}
+\frametitle{Bipartite entanglement entropy}
+
+\begin{figure}
+\subfigure[OBC.]{\includegraphics[width=0.5\textwidth]{fig_cut_obc.pdf}}
+\subfigure[PBC.]{\includegraphics[width=0.3\textwidth]{fig_cut_pbc.pdf}}
+\end{figure}
+
+\pause
+
+Renyi entropies
+\begin{equation}
+S_\alpha(\rho) \equiv \frac{1}{1-\alpha} \log \trace (\rho^\alpha)
+\end{equation}
+
+Degenerate spectrum for stabiliser circuits!
+
+
+\end{frame}
+
+% von Neumann entropy: $S_1 \equiv \lim_{\alpha\rightarrow1} S_\alpha(\rho)$
+
+
+
+\section{Measurement-induced criticality}
+\subsection{}
+
+\begin{frame}
+\frametitle{The Vanilla MIC}
+
+\begin{figure}
+\centering
+\includegraphics[trim={0, 0, 0, 1cm}, clip, width=0.5\textwidth]{fig_brick.pdf}
+\pause
+\includegraphics[trim={1cm 1cm 1cm 1.5cm}, clip, width=0.5\textwidth]{fig_ent1D.pdf}
+\end{figure}
+
+{\centering
+$p<p_c$ volume law \\
+$p>p_c$ area law \\
+}
+
+% \begin{itemize}
+% \item<+-> Critical phases: $p<p_c$ volume law, $p>p_c$ area law
+% \item<+-> Percolation mapping
+% \item<+-> Other probes of the transition
+% \end{itemize}
+
+\end{frame}
+
+% phenomena for Haar unitary gates, also MIC is seen for Cliffords
+% initialise product state, measure prob p
+% exact for Haar random gates. $S_0$ is the minimum cut.
+% pc approx. 0.158
+% DATA COLLAPSE
+
+
+\begin{frame}
+\frametitle{Modelling delayed measurements}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth]{fig_ancilla.pdf}
+\end{figure}
+
+\pause
+$U$ is random Clifford layer; $V$ is CNOT ancilla coupling (prob. $p$)
+\begin{equation}
+K_{\vec{m}} = \mathcal{T} \bigg[ \prod_{t=1}^\tau \bigg(V_t U_t V_{t-\frac{1}{2}} U_{t-\frac{1}{2}}\bigg) \bigg]
+\end{equation}
+
+\pause
+Quantum channel
+\begin{equation}
+\rho \rightarrow
+\sum_{\vec{m}} K_{\vec{m}} \bigg(\rho \otimes \dyad{\vec{m}(0)}\bigg) K_{\vec{m}}^\dagger 
+= \sum_{\vec{m}} \rho_{\vec{m}} (\tau) \otimes \dyad{\vec{m}(\tau)}
+\end{equation}
+Ancilla projection recovers the usual MIC.
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Entanglement localisation}
+
+No critical behaviour at $p_c$
+
+\pause
+Consider $L/3$ mutual information on open chain
+\begin{equation}
+I(A:B) = S(A) + S(B) - S(AB)
+\end{equation}
+\begin{figure}
+\centering
+\includegraphics[trim={0.5cm 0.7cm 1cm 1cm}, clip, width=0.5\textwidth]{fig_ancL3_96.pdf}
+\end{figure}
+
+% \pause
+% \begin{itemize}
+% \item Long-range entanglement never develops for some $p$. 
+% \item Projecting ancillae migrates entanglement non-monotonically.
+% \end{itemize}
+
+\end{frame}
+
+% showed for a variety of system sizes
+
+
+\begin{frame}
+\frametitle{Correlation length}
+
+% How are correlations spatially localised in the pre-measurement state?
+% \begin{figure}
+% \centering
+% \includegraphics[trim={19cm 16cm 3.5cm 2cm}, clip, width=0.5\textwidth]{fig_corlen.pdf}
+% \end{figure}
+
+Spatial correlation with $L$-independent correlation length $\xi \propto p^{-\nu}$.
+\begin{figure}
+\centering
+\begin{minipage}{0.55\linewidth}
+\includegraphics[trim={1cm 0 2cm 0}, clip, width=1\textwidth]{fig_corexp.pdf}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{0.35\linewidth}
+\begin{tabular}{l l}
+\hline
+system size & $\nu$ \\
+\hline
+$L=48$ 	& 0.632 \\
+$L=72$ 	& 0.725 \\
+$L=96$ 	& 0.753 \\
+$L=144$ & 0.779 \\
+$L=192$ & 0.789 \\
+\hline
+\end{tabular}
+\end{minipage}
+\end{figure}
+
+\end{frame}
+
+% Pre-measurement mutual information between end regions $A$ and $B$ on an open chain, as a function of their separation.
+
+% mutual information increases linearly time-law for separations less than $\xi(p)$, but the `elbow' marking $\xi(p)$ remains constant.
+
+% correlation length as function of $p$
+
+
+\section{Clifford spectral statistics}
+\subsection{}
+
+\begin{frame}
+\frametitle{RMT signatures of quantum chaos}
+
+Do Cliffords exhibit these signatures?
+
+\pause
+Chaotic quantum systems have spectral statistics described by RMT at late times (BGS conjecture).
+
+\pause
+\vspace{0.5cm}
+Floquet $U$ models $H(t) = H(t+\tau)$.
+\begin{equation}
+U = e^{-iH}
+\end{equation}
+Study level statistics of $H$.
+
+\pause
+\vspace{0.5cm}
+\begin{itemize}
+\item<+-> nearest level spacing 
+\item<+-> spectral form factor
+\end{itemize}
+
+\end{frame}
+
+% nonlocality. onset with Thouless time
+% periodically driven systems
+% Poissonian vs. Wigner-Dyson. not that useful because level degeneracies
+
+\begin{frame}
+\frametitle{Spectral form factor}
+
+The energy density function
+\begin{equation}
+\rho(E) = \sum_{n=1}^N \delta(E-E_n)
+\end{equation}
+
+has mean two-point correlation in Fourier space
+\begin{equation}
+K(t) 
+= \frac{1}{N^2} \sum_{m,n} \ev{ e^{-i(E_m-E_n)t} }
+= \ev{ \trace{U(t)} \trace{U^\dagger(t)} }
+\end{equation}
+
+\pause
+\emph{Cliffords.} Let $G(U(t))$ be Pauli strings that generate all $P \in \mathcal{P}_L$ such that 
+\begin{equation}
+P \rightarrow_{U(t)} P \mod U(1)
+\end{equation}
+
+We show
+\begin{equation}
+K(t) = 
+\begin{cases}
+2^{\abs{G(U(t))}}, & \text{if } P \rightarrow_{U(t)} +P, \ \forall P \in G(U(t)) \\
+0, 				   & \text{otherwise}
+\end{cases}
+\end{equation} 
+
+% Polynomial time to find $G(U(t))$ and then to check their phase!
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Spectral form factor}
+
+\begin{minipage}{0.3\linewidth}
+\begin{equation}
+K_\text{CUE}(t) = 
+\begin{cases}
+N^2 & t=0 \\ 
+t 	& 0 < t \leq N \\ 
+N 	& N \leq t
+\nonumber
+\end{cases}
+\end{equation}
+\end{minipage}
+\hspace{0.7cm}
+\begin{minipage}{0.6\linewidth}
+\onslide<2,3>{
+\begin{equation}
+K_\text{Clif.}(t)
+\begin{cases}
+\text{exponential ramp, sub-linear ramp time} \\
+\text{late-time $K(t) \propto 2^{cL}$ for some $c>1$} \\
+\text{small stabiliser orbits}
+\end{cases}
+\nonumber
+\end{equation}
+}
+\end{minipage}
+
+
+
+\begin{figure}
+\centering
+\subfigure{\includegraphics<2,3>[trim={3cm 0 3cm 0}, clip, width=0.7\textwidth]{fig_sff_L16.pdf}}
+\subfigure{\includegraphics<3>[trim={2.5cm 0 3cm 0}, clip, width=0.7\textwidth]{fig_sff_ft.pdf}}
+\end{figure}
+
+% \begin{table}
+% \centering
+% \begin{tabular}{c c c}
+% \hline
+% \thead{system size} &
+% \thead{late time \\ $K(t)$} & 
+% \thead{late time \\ $\ev{\abs{G(U(t))}}$} \\
+% \hline
+% $L=8$ 	& $2^{10.40}$ & 2.73 \\
+% $L=16$ 	& $2^{20.40}$ & 4.09 \\
+% $L=24$ 	& $2^{32.91}$ & 5.70  \\
+% $L=32$ 	& $2^{45.93}$ & 7.39 \\
+% $L=48$ 	& $2^{56.86}$ & 10.88 \\
+% $L=64$ 	& $2^{83.82}$ & 14.35 \\
+% \hline
+% \end{tabular}
+% \end{table}
+
+
+\end{frame}
+
+% broken time-reversal symmetry
+
+
+\section{Outlook}
+
+\begin{frame}
+\frametitle{Outlook}
+
+...Past
+\begin{itemize}
+\item Extension of MIC to including measurement ancillae
+\item Clifford spectral statistics
+\end{itemize}
+
+\vspace{0.5cm}
+\pause
+Future...
+\begin{itemize}
+\item Time correlations 
+\item Spectral statistics to capture measurement transition
+\item Higher dimensions
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+% \begin{frame}
+
+% {\tiny
+% \nocite{*}
+% \setbeamertemplate{bibliography item}[text]
+% \bibliographystyle{h-physrev}
+% \bibliography{bib}
+% }
+
+% \end{frame}
+
+
+
+\end{document}

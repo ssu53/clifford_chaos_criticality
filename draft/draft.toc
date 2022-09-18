@@ -1,0 +1,28 @@
+\contentsline {section}{\numberline {1}Introduction}{5}
+\contentsline {section}{\numberline {2}Preliminaries}{7}
+\contentsline {subsection}{\numberline {2.1}General quantum states}{7}
+\contentsline {subsection}{\numberline {2.2}Measurements}{8}
+\contentsline {subsection}{\numberline {2.3}Pauli group}{11}
+\contentsline {subsection}{\numberline {2.4}Stabilisers}{12}
+\contentsline {subsection}{\numberline {2.5}Clifford gates}{14}
+\contentsline {subsection}{\numberline {2.6}Entropy and information}{17}
+\contentsline {section}{\numberline {3}The measurement-induced transition}{21}
+\contentsline {subsection}{\numberline {3.1}Bipartite entanglement entropy}{22}
+\contentsline {subsection}{\numberline {3.2}Random circuit model and the critical phases}{23}
+\contentsline {subsection}{\numberline {3.3}Analytic approaches}{27}
+\contentsline {subsection}{\numberline {3.4}Probes of the critical transition}{30}
+\contentsline {section}{\numberline {4}Entanglement dynamics with delayed measurements}{34}
+\contentsline {subsection}{\numberline {4.1}Model and motivation}{34}
+\contentsline {subsection}{\numberline {4.2}Mutual information}{37}
+\contentsline {subsection}{\numberline {4.3}Correlation length and exponent}{39}
+\contentsline {section}{\numberline {5}Clifford spectral statistics}{42}
+\contentsline {subsection}{\numberline {5.1}Chaos, integrability, and random matrix theory}{43}
+\contentsline {subsection}{\numberline {5.2}Nearest level spacing}{45}
+\contentsline {subsection}{\numberline {5.3}Spectral form factor}{47}
+\contentsline {section}{\numberline {6}Outlook}{56}
+\contentsline {section}{Appendices}{58}
+\setcounter {tocdepth}{0}
+\contentsline {section}{\numberline {A}Simulation of stabiliser circuits}{58}
+\contentsline {section}{\numberline {B}Entanglement entropy of stabiliser states}{60}
+\setcounter {tocdepth}{1}
+\contentsline {section}{References}{61}

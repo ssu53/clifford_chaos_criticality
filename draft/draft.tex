@@ -1,0 +1,1660 @@
+\documentclass[10pt]{article}
+\usepackage[left=2.54cm, right=2.54cm, top=3cm, bottom=3cm]{geometry}
+
+%\usepackage{enumitem}	
+% \usepackage{titlesec}	
+\usepackage{amssymb}	
+\usepackage{subfigure}	
+\usepackage{float}		
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{physics}
+
+\usepackage{multirow}
+
+\usepackage{array}
+\usepackage{makecell}
+
+\captionsetup{font=small}
+\interfootnotelinepenalty=10000
+\usepackage[bottom]{footmisc}
+
+%\setlength{\floatsep}{10pt plus 2.0pt minus 2.0pt}
+%\usepackage[font=footnotesize,labelfont=bf]{caption}
+
+\setlength{\skip\footins}{1cm}
+
+\usepackage{graphicx}
+% \usepackage{pdfpages}
+\usepackage{verbatim}
+% \usepackage{fancyhdr}
+
+\usepackage{verbatimbox}
+
+\usepackage[toc]{appendix}
+
+\setlength{\parskip}{5pt}
+\setlength\parindent{0pt}
+
+% \setlength\tabcolsep{1em}
+% \usepackage{multirow}
+\renewcommand{\arraystretch}{1.5}
+\renewcommand{\baselinestretch}{1.5}
+\renewcommand{\abstractname}{\vspace{-\baselineskip}}
+
+\usepackage[compact]{titlesec}
+\titleformat*{\section}{\huge\bfseries}
+% \titlespacing{\section}{0pt}{1ex}{3ex}
+% \titlespacing{\subsection}{0pt}{1ex}{0ex}
+% \titlespacing{\subsubsection}{0pt}{0.5ex}{0ex}
+
+
+\usepackage{csquotes}
+
+\usepackage{epigraph}
+\setlength\epigraphrule{0pt}
+
+\begin{document}
+
+{\centering
+
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal rule
+\rule{\textwidth}{0.4pt} % Thin horizontal rule
+
+\huge{\textsc{Chaos and Measurement-Induced Criticality on Stabiliser Circuits}} \\
+
+% \vspace{0.2\baselineskip} % Whitespace below the title
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal rule
+\rule{\textwidth}{1.6pt} % Thick horizontal rule
+
+\vspace{0.5cm}
+\Large{\textsc{Shiye Su}}\\
+
+\vspace{1cm}
+
+\large{Advior: Sarang Gopalakrishnan, David Huse}\\
+\large{Second Reader: Shivaji Sondhi}\\
+
+\vspace{0.5cm}
+
+\large{Senior Thesis\\ Department of Physics, Princeton University}\\
+}
+
+\vspace{0.5cm}
+
+
+\begin{abstract}
+Repeated local projective measurements are known to induce an entanglement transition in interacting many-body systems with unitary dynamics. We investigate this transition on stabiliser circuits evolving under Clifford gates. Following a brief review of results in the random circuit setting, we introduce an extension that models `deferred measurements' by storing different quantum trajectories in ancillae. Our results demonstrate that the entanglement transition is lost when measurements are delayed; moreover, entanglement growth becomes localised in space, such that mutual information is nonzero only within a correlation length that diverges as the measurement probability approaches zero. Motivated by the extensive use of stabiliser states to study this class of problems, we turn our attention to the thermalising properties of Clifford circuits as diagnosed by their spectral statistics. We present an efficient algorithm for computing the spectral form factor for a Clifford Floquet and find that this form factor has an exponential ramp with immediate onset, sub-linear ramp time, and late-time mean greater than that of the Circular Unitary Ensemble. Our results show that, though Cliffords are known to successfully reproduce some aspects of chaos in Haar unitary circuits, they lack conventional signatures of thermalisation.
+\end{abstract}
+
+\vspace{1cm}
+
+{\centering\footnotesize
+This paper represents my own work in accordance with University regulations.\\
+% /s/ Shiye Su\par
+}
+
+
+\newpage
+
+\vspace*{\fill}
+
+{\centering
+\textbf{Acknowledgements}\par
+}
+
+I am grealy indebted to Professor Sarang Gopalakrishnan for much of what I have learnt about this topic, for his patient, thoughtful explanations, and commitment as an advisor. Sarang's insightful suggestions have been crucial to my progress, and his generosity allowed me to capitalise on a serendipitous and stimulating research opportunity last summer. My experience of physics has been deeply enriched by the condensed matter I learnt then and in this thesis, and by the scientists I met at the GC. 
+
+This work has also benefitted immensely from the expertise of Michael Gullans, whose guidance and readiness to my questions were greatly appreciated. I am also grateful to Amos Chan for enthusiastic and illuminating discussions about many-body chaos. I thank Professor David Huse for his support and for helpful comments on a draft; Professor Shivaji Sondhi, for serving as my second reader; and Karen Kelly for her positivity and assistance reimbursing my trips to New York City.
+
+I am thankful to my family for their love and for my education. To my Princeton friends, thank you for four wonderful years. I have learnt so much from your kindness and intellectual enthusiasm. 
+
+\vspace*{\fill}
+
+
+\newpage
+
+\vspace*{\fill}
+
+\setlength\epigraphwidth{.8\textwidth}
+
+\epigraph{\itshape ``... ils permettent un d\'eployement illimit\'e de l'initiative et de l'imagination de celui qui les fait, avec une souplesse d'utilisation consid\'erable, qui permet de tirer toujours le meilleur parti des ressources particuli\'eres du moment.''}{--- Alexander Grothendieck, \textit{Le Kimchi}}
+
+% \setlength\epigraphwidth{.75\textwidth}
+
+% \begin{quote}
+% \centering
+% ``...ils permettent un d\'eployement illimit\'e de l'initiative et de l'imagination de celui qui les fait, avec une souplesse d'utilisation consid\'erable, qui permet de tirer toujours le meilleur parti des ressources particuli\'eres du moment.''
+% \end{quote}
+
+\vspace*{\fill}
+
+\newpage
+
+\renewcommand{\baselinestretch}{0.75}
+{\tableofcontents}
+\renewcommand{\baselinestretch}{1.5}
+
+\newpage
+
+
+\section{Introduction}
+
+\epigraph{\itshape ``... on prendra soin cependant de laisser toujours suffisamment de jus dans le pot pour que le l\'egume soit enti\`erement couvert.''}
+
+An interacting many-body system, initialised in a weakly entangled state, typically develops long-range entanglement between distantly separated subsystems over time. Irreversible entanglement growth is an essential aspect of thermalisation. While thermalisation is the generic behaviour, there exist non-finely-tuned systems wherein this thermalisation is suppressed. The study of these non-thermalising systems has been of great interest in quantum chaos and non-equilibrium physics beyond the Boltzmann paradigm. In the context of quantum simulation, weakly entangled states are significant because they are cheap to represent and classically simulate; for example, with a small number of parameters, they are well approximated by decompositions into Matrix Product States (MPS) \cite{vidal2003efficient, hastings2007area}.
+
+An important concept in thermalisation is the Eigenstate Thermalisation Hypothesis (ETH), which is believed to hold for the broad class of thermalising systems. Loosely, it states that each individual energy eigenstate has thermal observables, equivalent to the microcanonical ensemble, because a pure state initialised in some far-from-equilibrium state does thermalise though eigenstates are fixed under time evolution \cite{abanin2019colloquium, nandkishore2015many}. Systems which remain localised, however, violate the ETH because they do not thermalise.\footnote{Non-thermalising integrable models do, however, `equilibriate' a generalised Gibbs ensemble \cite{ilievski2015complete, calabrese2007quantum}.} The most famous example of a non-thermalisation is many-body localisation (MBL), which generalises the single-particle Anderson localisation. In MBL systems, a highly entangled thermalising phase exists at weak disorder, and a weakly entangled non-thermalising phase exists at strong disorder.\footnote{`Weakly' and `strongly' entangled are defined by whether the bipartite entanglement entropy scales with the extensive volume or boundary of the region; we define this more precisely later.} Many-body-localised states in the latter phase, even at late times, defy the usual equilibrium ensemble description of statistical mechanics; this behaviour is robust to perturbations of the Hamiltonian \cite{nandkishore2015many}. One perspective on MBL is that localising systems fail to serve as baths for their constituent subsystems. The degrees of freedom in a subsystem do not entangle strongly with the degrees of freedom in the rest of the system. 
+
+
+% ETH implies volume law entanglement for subsystems in eigenstates, but in MBL systems where ETH fails, the eigenstates are only weakly entangled.
+% Try to be more explicit here. ETH implies volume law entanglement for subsystems in eigenstates because the subsystem entanglement entropy is the thermal entropy. In the MBL problem, when ETH fails the eigenstates become weakly entangled. Spell out and define what highly entangled (volume law) and weakly entangled (area law) mean. Note that under time evolution you always get a volume law even in MBL; it is the eigenstates that have a sharp distinction.
+
+Remarkably, an entanglement phase transition also emerge in systems evolving under unitary-projective dynamics, which model time-evolving quantum system subject to measurements \cite{skinner2019measurement, li2019measurement, chan2019unitary}. `Quantum Zeno effect' was first used to describe the inhibition of transitions between quantum states in the presence of frequent measurements. This effect also manifests here in the sense that a scrupulously watched system does not develop extensive long-range entanglement and does not thermalise. If measurements are infrequent, the generic thermalisation behaviour survives and long-range quantum correlations develop. While the measurement-induced transition is believed to occur in general systems, random quantum circuits discrete in space and time have been the most productive setting for their study. We will study such models on Clifford circuits, extending the usual model to an ancillary system that entangles with the main circuit, which more realistically models the measurement apparatus.
+
+The perspective of quantum information bestows thermalisation with further physical significance. While unitary evolution guarantees that information is never lost in a closed quantum system, such systems generically contain macroscopically many degrees of freedom, which may only be probed by coupling a measurement apparatus to a few local degrees of freedom. Thus, it is still meaningful to ask whether the information remains accessible \cite{sekino2008fast, nahum2017quantum, choi1903quantum}. The spread of local operators into global ones underlies entanglement growth. A local operator $\mathcal{O}$ evolves under a Hamiltonian $H$ by $\mathcal{O} \rightarrow e^{iHt} \mathcal{O} e^{-iHt}$. The higher-order commutators of the Baker-Campbell-Haussdorf expansion show that this operator becomes highly non-local over time even for local $H$, such that the information it encodes becomes irretrievable. This dispersal of initially local information into correlations over the entire system is called information scrambling, a process which underlies chaos in quantum many-body systems. Whereas a localised system forever retains memory of its initial conditions in local observables, these initial conditions become irrecoverable in thermalising systems \cite{nandkishore2015many}. The perspective of entanglement and information illuminates rich connections between condensed matter physics, holography, and black holes.
+%[The rest of the system has been a good bath to the subsystem!]
+
+The study of thermalisation and chaos has highlighted rich connections between condensed matter systems, information theory, and black holes. Random matrix theory has provided a successful paradigm for studying quantum chaos in wide gamut of systems, from the SYK to random circuit models \cite{gharibyan2018onset, garcia2016spectral, chan2018solution}. A generic chaotic system freely explores the available phase space, such that at late times, its unitary evolution from local interactions is like that of a random unitary matrix without any notion of spatial structure. In particular, its spectral statistics provide signatures of chaos. Motivated by our use of stabiliser states to study the measurement-induced entanglement transition, we will explore the spectral statistics of Clifford gates. 
+
+This paper is structured as follows: In (2), we review the relevant theoretical framework. In (3), we introduce the lattice model which serves as a setting for studying measurement-induced criticality, and reproduce results for Clifford circuits. In (4), we study a modification of this model with deferred measurements, where different quantum trajectories are stored in a register of ancillae. In (5), we study the spectral properties of Clifford Floquet circuits, without measurements. We present an efficient method for calculating Clifford spectral form factors and display the relevant numerics.
+
+
+
+
+\clearpage
+\section{Preliminaries}
+
+\epigraph{\itshape On \'evitera dans la mesure du possible le sel blanc du commerce, et se procurera du sel brut (de couleur grise, s'il est marin).}
+
+This section reviews measurements, stabiliser states, and entropy, drawing heavily from \cite{nielsen2002quantum}, \cite{preskill1998lecture}, \cite{gottesman1998heisenberg}.
+
+\subsection{General quantum states}
+
+Quantum mechanics postulates that an isolated physical system is associated with a Hilbert space $\mathcal{H}$, and a state of that system is described by a state vector $\ket{\psi} \in \mathcal{H}$. A quantum system for which $\ket{\psi}$ is exactly known is in a pure state. However, a more general description is needed for a `mixed' quantum state, which is only incompletely known to be one from an ensemble of pure states.  
+
+Density operators supply this more general formalism, which is most expedient for the study of entanglement dynamics. Suppose a system is in an ensemble of pure states $\{\ket{\psi_i}\}$ with probabilities $\{p_i\}$ respectively. Its density operator is given by
+\begin{equation}
+\rho \equiv \sum_i p_i \dyad{\psi_i}.
+\end{equation}
+
+For a pure state $\ket{\psi}$, this sum reduces to a single term, $\rho = \dyad{\psi}$. Otherwise, the system is in a mixed state, and is described by an ensemble of more than one state with nonzero probability. A mixed state $\rho$ can be considered a classical probability distribution over an ensemble of pure states $\{\rho_i\}$, $\rho = \sum p_i \rho_i$. Roughly, the off-diagonal entries of the density operator represent quantum correlations between states in the chosen basis, while the diagonal entries represent classical correlations (measurement eigenvalues). 
+
+Evolution by unitary operator $U$, acting on states by $\ket{\psi}\rightarrow U\ket{\psi}$, transforms the density operator as
+\begin{equation}
+\rho = \sum p_i \dyad{\psi_i} \rightarrow \sum p_i U \dyad{\psi_i} U^\dagger = U \rho U^\dagger
+\end{equation}
+
+The density operator has the property that
+\begin{displayquote}
+$\trace{(\rho^2)} \leq 1$, with equality if and only if $\rho$ is a pure state. 
+\end{displayquote}
+
+Idempotency is an alternative purity condition: $\rho$ describes a pure state if and only if $\rho = \rho^2$. 
+
+In general, a (possibly infinite-dimensional) linear operator is a density operator if and only if it is Hermitian, has unity trace, and is positive semi-definite: $\ev{\rho}{\psi} \geq 0 \ \forall \ket{\psi}$. (The non-negativity of density matrix eigenvalues is a corollary of non-negative probabilities of realising each pure state in the ensemble.) The properties together imply that the density operators form a convex set: $\rho = \sum c_i \rho_i$ defines a valid density operator for a set of non-negative coefficients $\{c_i\}$ satisfying $\sum c_i = 1$. 
+
+Infinitely many different statistical ensembles give rise to the same density matrix. This is a direct consequence of a unitary freedom in the decomposition of $\rho$ as a convex combination of density matrices. Formally stated, if and only if
+\begin{equation}
+\sqrt{p_i} \ket{\psi_i} = \sum_j u_{ij} \sqrt{q_j} \ket{\varphi_j}
+\end{equation}
+
+where $\ket{\psi_i}, \ket{\varphi_j}$ are each a normalised ensemble of states with probability distributions $p_i, q_i$, and $u_{ij}$ is a unitary matrix, do the two ensembles generate the same density matrix
+\begin{equation}
+\rho = \sum_i p_i \dyad{\psi_i} = \sum_j q_j \dyad{\varphi_j}.
+\end{equation}
+
+Physically, this means that there are infinitely many ways to prepare the same mixed state, and these different preparations may not be distinguished from any observable $M$ and its expected value $\ev{M} = \trace(\rho M)$.
+
+Density matrices are well-suited to describing composite systems, which comprise two or more subsystems. Suppose a composite system over $A$ and $B$ is in a pure state given by $\rho_{AB}$. The state of subsystem $A$ is described by the reduced density operator
+\begin{equation}
+\rho_A \equiv \trace_B(\rho_{AB})
+\end{equation}
+
+which has the natural property that for a product state $\rho_{AB} = \rho_A \otimes \rho_B$, the reduced density operator recovers
+\begin{equation}
+\trace_B(\rho_{AB})
+= \rho_A \trace_B(\rho_B) 
+= \rho_A
+\end{equation}
+
+$A$ is in a pure state if $AB$ is a pure product state. If $A$ is instead a mixed state, $\rho_{AB}$ cannot be decomposed into a tensor product; this means there is entanglement between $A$ and $B$. 
+
+The above discussion generalises in the natural way for the complementary subsystem $B$, or for composite systems comprising more than two subsystems.
+
+
+% Suppose the subsystems are $A$ and $B$, with Hilbert spaces $\mathcal{H}_A$ and $\mathcal{H}_B$. The Hilbert space of the composite system is
+% \begin{equation}
+% \mathcal{H}_{AB} = \mathcal{H}_A \otimes \mathcal{H}_B
+% \end{equation}
+
+
+
+\subsection{Measurements}
+
+Most generally, quantum measurements are described a set of measurement operators $\{M_m\}$, indexed by their distinct measurement outcomes $m$. For example, $M_0 = \op{0}{0}$ and $M_1= \op{0}{1}$ form a such a valid set; they measure whether a qubit is in the state $\ket{0}$ or $\ket{1}$ and projects into $\ket{0}$. The probability of getting some measurement result is unity; this is reflected in the completeness requirement
+\begin{equation}
+\sum_m M_m^\dagger M_m = I
+\end{equation}
+
+Acting on the pure state $\ket{\psi}$, the probability of obtaining measurement result $m$ is
+\begin{equation}
+p_m = \ev{M_m^\dagger M_m}{\psi}
+\end{equation}
+
+If the result $m$ is observed, the quantum state after measurement becomes
+\begin{equation}
+\ket{\psi} \rightarrow \frac{M_m \ket{\psi}}{\sqrt{p_m}}
+\label{eq_collapse}
+\end{equation}
+
+This is the so-called `measurement collapse,' which is in general a non-unitary transformation.
+
+Suppose we have a set of general measurement operators $\{M_m\}$ satisfying the completeness relation. In the density operator formalism, the probability of measuring $m$ in state $\ket{\psi}$ is
+\begin{equation}
+p_{m|i} 
+= \ev{M_m^\dagger M_m}{\psi_i} 
+= \trace{\left( M_m^\dagger M_m \dyad{\psi_i} \right)}
+= \trace{\left( M_m^\dagger M_m \rho_i \right)}
+\end{equation}
+
+which implies that, over the entire ensemble, the probability of obtaining measurement result $m$ is
+\begin{equation}
+p_m =\trace{\left( M_m^\dagger M_m \rho \right)}
+\end{equation}
+
+Let $\ket{\psi_i^{(m)}}$ be the state to which $\ket{\psi_i}$ collapses after $m$ is observed. The density operator of the system post measurement is then
+\begin{align}
+\rho_m 
+&= \sum_i p_{i|m} \dyad{\psi_i^{(m)}} \\
+&= \sum_i \frac{p_{m|i} p_i}{p_m} \frac{\dyad{M_m \psi_i^{(m)}}}{p_{m|i}} \\
+&= \frac{M_m \rho M_m^\dagger}{p_m}
+\end{align}
+
+Often a `measurement' is made but the outcome is not observed. Perhaps, the outcome is stored in a quantum register, without collapsing the state into a particular eigenspace. Then, the density operator describes a mixture of different possible systems, and is given by
+\begin{equation}
+\rho = \sum_m p_m \rho_m = \sum_m M_m \rho M_m^\dagger 
+\end{equation}
+
+This will be become especially relevant in our study of delayed measurements.
+
+
+Projective measurements are a special class of measurements of particular interest. In addition to the requirement of completeness, projective measurements operators $\{M_m\}$ are orthogonal projectors; that is, they satisfy $M_m = M_m^\dagger$ (Hermitian) and $M_m M_{m'}  = \delta_{m,m'} M_m$ (idempotent, mutually orthogonal). It is useful to conceptualise $\{M_m\}$ as the spectral decomposition of a Hermitian observable $M$, given by
+\begin{equation}
+M = \sum_m m M_m
+\end{equation}
+
+where each $M_m$ projects onto the respective orthogonal eigenspaces labelled by the measurement outcome $m$.
+
+For projective measurements, the probability of obtaining measurement outcome $m$ is 
+\begin{equation}
+p_m = \ev{M_m}{\psi}
+\end{equation} 
+
+which implies the expectation value of the associated observable
+\begin{equation}
+\ev{M} 
+= \sum_m m p_m
+= \ev{M}{\psi}
+\end{equation} 
+
+In the case of projective measurements, the expressions for measurement probabilities in a mixed state simplify to
+\begin{equation}
+p_m = \trace(\rho M_m)
+\end{equation}
+
+such that 
+\begin{equation}
+\ev{M} = \sum_m m p_m = \trace(\rho M)
+\end{equation}
+
+General and projective measurements are not so fundamentally different. Just as a mixed state may always be `purified' to a pure state by the introduction of an ancilla system, any general measurement on a system $Q$ may be implemented as a projective measurement on the composite system
+\begin{equation}
+Q \otimes (\text{ancilla system})
+\end{equation}
+
+The demonstration of this equivalence is straightforward. Construct the ancilla system such that it has a basis $\ket{m}$ corresponding to the measurement outcomes of $\{M_m\}$, and initalise it in the state $\ket{\tilde{m}}$. Define the unitary operator $U$, acting on the composite system of $Q$ and ancillae, by
+\begin{equation}
+U \ket{\psi, \tilde{m}} = \sum_m M_m \ket{\psi, m}
+\end{equation}
+
+Then a projective measurement on the composite system, given by the projectors
+\begin{equation}
+M_m^{\text{comp.}} = I_Q \otimes \dyad{m}
+\end{equation}
+
+satisfies
+\begin{equation}
+p_m 
+= \ev{U^\dagger M_m^{\text{comp.}} U}{\psi, \tilde{m}}
+= \ev{M_m^\dagger M_m}{\psi}
+\end{equation}
+
+and transforms the composite system to
+\begin{equation}
+U \ket{\psi, \tilde{m}} \rightarrow \frac{M_m \ket{\psi, m}}{\sqrt{p_m}}
+\end{equation}
+
+Restricted to $Q$, the $U$ followed by projection thus implements
+\begin{equation}
+\ket{\psi} \rightarrow \frac{M_m \ket{\psi}}{\sqrt{p_m}}
+\end{equation}
+
+which is identical to the state transformation in Equation \ref{eq_collapse}. This concludes the proof that projective measurements, supplemented by unitary evolution coupling a system to ancillae, have sufficient power to describe general measurements. This discussion will be valuable perspective on our model of delayed measurements with a axuiliary system of ancillae, which serve as a register for circuit trajectories.
+
+
+
+
+\subsection{Pauli group}
+
+In this work, we are concerned with the special class of quantum circuits that have a stabiliser description. The original motivations for their study are rooted in quantum error correction, because many error correcting codes are stabiliser codes. Howevers, stabilisers are also interesting because they offer a compact description of quantum states and a means to their efficient simulation.
+
+Stabilisers exploit the group structure of the Pauli operators. The Pauli matrices, including the identity, are
+
+\renewcommand{\arraystretch}{1}
+\begin{equation}
+I = \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix},
+\quad
+X = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix},
+\quad
+Y = \begin{bmatrix} 0 & -i \\ i & 0 \end{bmatrix},
+\quad
+Z= \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}.
+\end{equation}
+\renewcommand{\arraystretch}{1.5}
+
+Often, the Pauli matrices are also respectively denoted $\sigma_0, \sigma_1, \sigma_2, \sigma_3$. 
+
+For a single qubit, the Pauli group $\mathcal{P}_1$ consists of all the Pauli matrices together with multiplicative factors $\pm 1, \pm i$
+\begin{equation}
+\mathcal{P}_1 \equiv \{\pm I, \pm i I, \pm X, \pm i X, \pm Y, \pm i Y, \pm Z, \pm i Z\}.
+\end{equation}
+
+In terms of its generators, $\mathcal{P}_1 = \ev{X, Y, Z}$. Generalising, the Pauli group $\mathcal{P}_n$ on $n$ qubits is defined as all $n$-fold tensor products of the Pauli matrices with multiplicative factors $\pm 1, \pm i$. That is, 
+\begin{equation}
+\mathcal{P}_n = \mathcal{P}_1^{\otimes n}
+\end{equation} 
+
+Straightforward combinatorics show that $\abs{\mathcal{P}_n} = 4^{n+1}$.
+
+An element of $\mathcal{P}_n$ is called a Pauli string of length $n$, and it operates on a Hilbert space of $n$ spins. Pauli strings are commonly denoted by a `string' of operators. For example $X_1 \otimes Z_2 \otimes Y_3 \times Z_2 \in \mathcal{P}_4$ is abbreviated to $XZYZ$. Pauli strings either commute or anti-commute. Because an element of the Pauli group $\mathcal{P}_1$ is either Hermitian (e.g. $X$) or anti-Hermitian (e.g. $iX$), Pauli strings are also likewise either hermitian or anti-Hermitian. 
+
+\begin{comment}
+A few properties are immediately obvious. Let $M,N \in S$. 
+
+\begin{itemize}
+\item Unitarity: $\forall M \in G_n$, $M$ satisfies $M^{-1} = M^\dagger$. 
+\item (Anti/)Hermiticity: $\forall M \in G_n$, $M^2 = \pm I$; if $M^2 = I$, $M^\dagger = M$, else if $M^2 = -I$, $M^\dagger = -M$. Those in stabiliser group have $g^\dagger = g$.
+\item (Anti/)Commutation: $\forall M, N \in G_n$, $MN = \pm NM$. Those in stabiliser group must commute.
+\end{itemize}
+\end{comment}
+
+We will call a Pauli string modulo $\pm 1, \pm i$ factors a `phaseless Pauli string.' The group of phaseless length $n$ Pauli strings $\mathcal{P}_n/U(1)$ has cardinality $\abs{\mathcal{P}_n/U(1)} = 4^n$, and forms an orthonormal basis for the vector space of $2^n \times 2^n$ complex matrices
+\begin{equation}
+\ev{\mathcal{P}_n / U(1)}
+= \ev{\{I, X, Y, Z\}} 
+= (\mathbb{C}^{2\times2})^{\otimes n} 
+= \mathbb{C}^{2^n\times2^n}
+\end{equation}
+
+with the inner product
+\begin{equation}
+\ev{A,B} = \trace(A^\dagger B)/2^n
+\end{equation} 
+
+We display this decomposition explicitly. Let $A$ be a generic $2^n \times 2^n$ complex matrix. Then
+\begin{equation}
+A = \sum_{P\in \mathcal{P}_n / U(1)}^{4^n} a_P P, 
+\quad
+\sum_{P\in \mathcal{P}_n / U(1)}^{4^n} \abs{a_P}^2 = 1
+\end{equation}
+
+If $A = A^\dagger$ is a Hermitian operator, $a_P \in \mathbb{R}$. Due to orthonormality, which is guaranteed by the anticommutation properties of the Pauli matrices
+\begin{equation}
+a_P = \frac{1}{2^n} \trace(P^\dagger A)
+\end{equation}
+
+For example, for $n=1$,
+\begin{equation}
+A = \frac{1}{2} \left( \trace(AI) I + \trace(AX) X + \trace(AY) Y + \trace(AZ) Z \right)
+\end{equation}
+
+
+
+
+
+\subsection{Stabilisers}
+
+Now suppose $S$ is a subgroup of $\mathcal{P}_n$ and $V_S$ is the set of $n$-qubit states that are fixed by (in the simultaneous $+1$ eigenspace of) every Pauli string in $S$.
+\begin{equation}
+\ket{\psi} \in V_S \iff s \ket{\psi} = \ket{\psi} \quad \forall \ s \in S
+\end{equation}
+
+In the language of error correction, each $\ket{\psi} \in V_S$ is a codeword. $V_S$ forms a vector space on the codewords, and $S$ is the stabiliser of $V_S$. 
+
+For $S$ to stabilise a non-trivial $V_S$, necessary conditions are
+
+\begin{itemize}
+\item $\comm{s_1}{s_2}=0$, $\forall s_1, s_2 \in S$. This follows because $s_1 s_2 \ket{\psi} = s_1 \ket{\psi} = s_2 \ket{\psi} = s_1 s_2 \ket{\psi}$.
+\item $-I \notin S$. This follows because $-I \ket{\psi} = \ket{\psi} \implies \ket{\psi} = \vec{0}$.
+\end{itemize}
+
+The second condition implies that Pauli strings given by the tensor product of Pauli operators times a factor of $\pm i$ stabilise trivial vector spaces. For example, $(iZ)^2 = -I$. Therefore, for the purpose of describing quantum states, these Pauli strings, like $-I$, are not useful. To satisfy $-I \notin S$, we want only the Hermitian Pauli strings so that $s^2=I$ and $s^\dagger=s$ $\forall s \in S$; this means choosing only the Hermitian Pauli strings which form the subset of strings in $\mathcal{P}_n$ with $\pm1$ factors.
+
+An element $s$ of the stabiliser group $S$ over a $n$-qubit state space has a $(2n+1)$-dimensional representation $r(s)$ over the finite field of two elements, $\mathbb{Z}_2$, given by the vector
+\begin{equation}
+r(s) = (z_1, ..., z_l, x_1, ..., x_l \ | \ r)
+\end{equation}
+
+where for each site $i \in \{1,...,n\}$, the Pauli operator at that site is mapped according to $I \rightarrow (0,0)$, $X\rightarrow (0,1)$, $Y \rightarrow (1,1)$, $Z \rightarrow (1,0)$. $r \in \{0,1\}$ is a phase bit. If the coefficient of $s$ is $i^l$, $r=l/2$. Note that because $-I \notin S$, $l\in\{0,2\}$, so $r\in\{0,1\}$ is indeed a single bit. Similarly, phaseless Pauli strings are unfaithfully represented by a $(2n)$-dimensional vector
+\begin{equation}
+\bar{r}(s) = (z_1, ..., z_l, x_1, ..., x_l )
+\end{equation}
+
+This representation manifests an explicit isomorphism
+\begin{equation}
+\mathcal{P}_n / U(1) \cong (\mathbb{Z}_2)^{2n}
+\end{equation}
+
+The product of stabilisers (modulo phase) corresponds to vector addition over $\mathbb{Z}_2$. However, the phase bit transforms non-linearly.
+
+The generators of a stabiliser group provide a more compact description of the group than enumerating all the group elements; we generally work with this representation. To avoid redundancy, it is desirable that the set of generators is independent, that is, $\ev{g_1...g_{n-1}} \subset \ev{g_1...g_n}$ (strict subset). The independence of a set of generators $\{g_i\}$ may be verified by the linear independence of $\{\bar{r}(g_i)\}$. By a standard result in group theory, a group of size $|G|$ has at most $\log|G|$ generators. 
+
+The canonical choice of generators for a stabiliser over an $n$-qubit state is the set
+\begin{equation}
+\{Z_1, ..., Z_n, X_1, ..., X_n\}
+\end{equation}
+
+In the $\mathbb{Z}_2$ representation, this is the natural basis choice
+\begin{align}
+&\bar{r}(Z_1) = (1, 0, 0, ..., 0) \nonumber \\
+\vdots \nonumber \\
+&\bar{r}(X_n) = (0, ..., 0, 0, 1)
+\end{align}
+
+
+We noted that the commutation of all stabilisers in $S$ is a necessary condition for a non-trivial $V_S$. The (anti-/)commutation property of $g_1, g_2 \in \mathcal{P}_n$ may be computed by the symplectic inner product $\circ$ defined by
+\begin{equation}
+r(g_1) \circ r(g_2) = z_{11} x_{21} + ... + z_{1n} x_{2n} + x_{11} z_{21} + ... + x_{1n} z_{2n} \mod 2.
+\end{equation}
+
+$g_1$ and $g_2$ commute if and only if $r(g_1) \circ r(g_2) = 0$; they anticommute if and only if $r(g_1) \circ r(g_2) = 1$.
+
+In \cite{nielsen2002quantum}, it is shown that a vector space $V_S$ is of dimension $2^k$ when its stabiliser $S \subset \mathcal{P}_n$ is generated by $n-k$ independent commuting generators and $-I \notin S$. Thus, a $n$-qubit stabiliser state, modulo phase, is fully described by by $n$ stabilisers.
+
+Finally, unitary dynamics of stabiliser operators are described by the usual Heisenberg picture. Suppose the unitary operation $U$ is applied to a state space $V_S$ stabilised by $S$. $U$ may be thought of as a quantum gate. Because $UV_S = USV_S = (USU^\dagger) U V_S$, $UV_S$ is stabilised by $USU^\dagger$. Thus, $U$ transforms the stabiliser according to
+\begin{equation}
+S \rightarrow U S U^\dagger
+\label{eq_evol}
+\end{equation}
+
+This relation describes the action of $U$ as a superoperator on the stabiliser operators of the states. This relation is a multiplicative group homomorphism. So for $s_1,s_2 \in S$,
+\begin{equation}
+s_1 s_2 \rightarrow U s_1 s_2 U^\dagger = (U s_1 U^\dagger)(U s_2 U^\dagger)
+\end{equation}
+
+Thus the action of $U$ on any $s\in S$ is fully captured by its action on the generating set of $S$ -- an exponential reduction in complexity for which to be grateful! Making the canonical choice of generators, we can completely describe an operator $U$ by its action on $2n$ local, single-qubit operators $\{Z_i, X_i\}$.
+
+
+
+\subsection{Clifford gates}
+
+In general, the unitary evolution described in the previous section could map a Pauli string $s$ in the stabiliser group $S$ to some generic unitary operator. This could be undesirable for a variety of reasons, for example, the increase in computational complexity. This motivates the study of a restricted set of unitary gates, the Cliffords, which maintain closure of the Pauli group under unitary transformation.
+
+In group theory, the normaliser of a set $X$ in the group $G$ is a group defined by
+\begin{equation}
+N_G(X) = \{g \in G \ | \ g X g^{-1} = X\}
+\end{equation}
+
+Consider the normaliser of the Pauli group $\mathcal{P}_n$ in the group of $2^n$-dimensional unitaries. The Clifford group $C_n$ is defined as the quotient group, modulo the global phase, of this normaliser group
+\begin{equation}
+C_n = \{U \in U_{2^n} \ | \ U \mathcal{P}_n U^\dagger = \mathcal{P}_n\} / U(1)
+\end{equation}
+
+In literature, the Clifford group is sometimes defined with the $U(1)$ phase. We do not pursue that definition because Pauli string evolution by a Clifford gate is insensitive to this $U(1)$ factor (Equation \ref{eq_evol}). An element of the Clifford group is a Clifford gate. They map stabiliser states to other stabiliser states.
+
+% A system evolving under the application of Clifford gates only retains the property that it has a stabiliser description. 
+
+Unfortunately, many quantum gates including the $\pi/8$ gate and Toffoli gate are not in the Clifford group; thus Clifford gates are insufficient for universal quantum computation. However,
+
+\begin{displayquote}
+\emph{Theorem.} $C_n$ with any gate not in $C_n$ forms a universal set of quantum gates.
+\end{displayquote}
+
+Furthermore, encoding, decoding, error-detection and recovery for stabiliser codes can be accomplished using Cliffords, despite their non-universality. Besides the Paulis, common gates in the Clifford group include the CNOT, Hadamard, and phase gates. The state space definitions of these gates are
+
+\renewcommand{\arraystretch}{1}
+\begin{equation}
+\text{CNOT} = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \end{bmatrix},
+\quad
+H = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix},
+\quad
+S =  \begin{bmatrix} 1 & 0 \\ 0 & i \end{bmatrix}.
+\end{equation}
+\renewcommand{\arraystretch}{1.5}
+
+For CNOT, the first qubit is control, the second target. The action of these gates on $X$ and $Z$ generator stabilisers, as well as the Pauli gates, are summarised in Table \ref{tab_clifs}.
+
+\begin{table}
+\centering
+\addvbuffer[12pt 8pt]{
+\begin{tabular}{l l l}
+\hline
+Gate & \multicolumn{2}{l}{Transformation on basis stabilisers} \\
+\hline
+\multirow{2}{*}{CNOT}
+		& $X_C \rightarrow X_C X_T$ & $Z_C \rightarrow Z_C$ \\
+		& $X_T \rightarrow X_T$ 	& $Z_T \rightarrow Z_C Z_T$ \\
+H 		& $X \rightarrow Z$ 		& $Z \rightarrow X$ \\
+S		& $X \rightarrow Y$ 		& $Z \rightarrow Z$ \\
+X 		& $X \rightarrow X$ 		& $Z \rightarrow -Z$ \\
+Y 		& $X \rightarrow -X$ 		& $Z \rightarrow -Z$ \\
+Z 		& $X \rightarrow -X$ 		& $Z \rightarrow Z$ \\
+\hline
+\end{tabular}}
+\caption{Action of common Clifford gates on basis stabilisers $X$ and $Z$. Subscripts $C$ and $T$ denote the control and target qubits respectively for the CNOT gate.}
+\label{tab_clifs}
+\end{table}
+
+It is a theorem that a Clifford gate on $n$ qubits, modulo global phase, can be composed from $O(n^2)$ Hadamard, phase, and CNOT gates combined in composition or tensor product. Schematically,
+\begin{equation}
+C_n / U(1) = \ev{H,S, \text{CNOT}}
+\end{equation}
+
+A quantum circuit which comprises only Clifford gates is called a Clifford circuit or stabiliser circuit. An important result in quantum simulation is the Gottesman-Knill theorem, which states that Clifford circuits may be efficiently (polynomial time) simulated on a classical computer:
+
+\begin{displayquote}
+\emph{Theorem.} Suppose a quantum computation involves only: state preparations in the computational basis, Hadamard gates, phase gates, CNOT gates, Pauli gates, and measurements of observables in the Pauli group, and classical control conditioned on measurement outcomes. A quantum computation involving $m$ operations from this set on a state stabilised by $n$ generators can be simulated using $O(n^2 m)$ operations on a classical computer.
+\end{displayquote}
+
+This theorem follows naturally from the possibility of encoding stabilisers as vectors in $\mathbb{Z}^{2n}$, such that Clifford operations become manipulations of a polynomial-in-$n$ binary matrix. The details of simulating Clifford gates and measurements on stabiliser states is outlined in Appendix A. In recent work, this stabiliser technology was extended to the simulation of Clifford plus arbitrary diagonal ($T$) gates \cite{bravyi2016improved}. Though decomposing an arbitrary gate into Clifford + $T$ may require an infeasibly large number of gates, Clifford + $T$ is nonetheless a universal gate set.
+
+Even without such extensions, Gottesman-Knill theorem is useful because Cliffords effectively sample the space of general unitaries for some classes of problems, and therefore enable polynomial time numerics for studying those phenomena. This statement is made precise by the concept of design. Roughly, a unitary $t$-design is a finite subset of the unitaries whose $t$-th moment reproduces the $t$-th moment of the Haar random unitaries. That is, a set $\{U_k\}_{k=1}^K \subset \mathcal{U}_d$, where $\mathcal{U}_d$ is the set of unitaries in $d$ dimensions, is $t$-design if for every polynomial $P_{(t,t)}$,\footnote{The subscript $(t,t)$ indicates that the polynomial of degree at most $t$ in its argument and at most $t$ in the complex conjugate of its argument.}
+\begin{equation}
+\frac{1}{K} \sum_{k=1}^K P_{(t,t)}(U_k) = \int_{\mathcal{U}_d} \dd{U} P_{(t,t)} (U)
+\end{equation}
+
+where the integral over $\mathcal{U}_d$ is defined with the Haar measure, which formalises the notion of drawing uniformly from unitary matrices \cite{dankert2009exact}. The Cliffords have been well known to form a unitary 2-design. \cite{gross2007evenly} shows that $\{U_k\}_{k=1}^K$ forms a 2-design if and only if
+\begin{equation}
+\sum_{k_1, k_2 = 1}^K \abs{\trace\left(U_{k_1}^\dagger U_{k_2}\right)} / K^2 = 2
+\end{equation}
+
+This condition is satisfied for the Cliffords. This 2-design property means that in random Clifford circuits, the expectation value of the purity $\trace{\rho^2}$, its logarithm the second Renyi $S_2$, and the out-of-time-order correlator (OTOC), have quantitatively the same dynamics as those in a Haar random circuit \cite{nahum2017quantum, gross2007evenly}. Even for higher moment metrics for which the Cliffords do not reproduce Haar averages, they have been seen to capture most qualitative features of entanglement growth due to generic unitaries, and extensively used in the entanglement spreading and measurement-induced transition literature \cite{chan2019unitary, li2019measurement}.
+
+In \cite{webb2015clifford}, the Cliffords have been more exactly characterised as a 3-design, but not a $t$-design for $t\geq4$. 
+
+
+
+\subsection{Entropy and information}
+
+Concepts from information theory are central to the characterisation of entanglement in a quantum system, which is important to studying the system's thermalisation and critical behaviour. The central quantity of interest is entropy, which quantifies the randomness and information content of a random variable drawn from some probability distribution. The form of the entropy function arises naturally; it may also be derived axiomatically. We first review the classical entropies, and later examine their quantum analogues. We consider only discrete probability distributions.
+
+Classically, a discrete random variable $X$ with probability distribution $(p_1,...,p_n)$ over $n$ symbols has Shannon entropy 
+\begin{equation}
+H(X) \equiv H(p_1, ..., p_n) \equiv -\sum_i p_i \log p_i
+\end{equation}
+
+$H(X)$ is maximal when $X$ is uniformly distributed, such that $H(X) = \log{n}$. 
+
+Many useful quantities concerning the relationship between two random variables $X,Y$ (each with their own distributions) follow from the Shannon entropy. Their joint entropy is
+\begin{equation}
+H(X,Y) \equiv - \sum_{x,y} p(x,y) \log p(x,y)
+\end{equation}
+
+The joint entropy has the property of symmetricity: $H(X,Y) = H(Y,X)$; and subadditivity: $H(X,Y) \leq H(X) + H(Y)$. The second inequality is saturated iff $X,Y$ are independent random variables.
+
+The entropy of $X$ conditioned on $Y$ is
+\begin{equation}
+H(X|Y) \equiv H(X,Y) - H(Y)
+\end{equation}
+
+The property $H(X) \leq H(X,Y)$ implies $H(X|Y) \geq 0$. This inequality is saturated iff $Y$ is function of $X$. 
+
+The mutual information of $X$ and $Y$ is
+\begin{equation}
+H(X:Y) \equiv H(X) + H(Y) - H(X,Y) = H(X) - H(X|Y)
+\end{equation}
+
+The mutual information has the property of symmetricity: $H(X:Y) = H(Y:X)$; and nonegativity: $H(X:Y) \geq 0$. This inequality is saturated iff $X,Y$ are independent random variables, and implies that $H(Y|X) \leq H(Y)$. This captures the classical intuition that knowledge of a variable cannot be decreased by knowledge about a second variable. 
+
+Though the Shannon entropy is typically most important, we are sometimes interested in other measures of entropy. The Renyi entropy is a class of entropies that generalise the Shannon (as well as other) entropies. It is defined as
+\begin{equation}
+H_\alpha(X) = \frac{1}{1-\alpha} \log\left(\sum_i p_i^\alpha\right)
+\end{equation}
+
+where $\alpha$ is called the order, or Renyi index, satisfying $\alpha \geq 0, \alpha \neq 1$.
+
+Three special cases of the Renyi entropy are of particular interest, $\alpha=0$, $\alpha\rightarrow1$, and $\alpha\rightarrow\infty$. For $\alpha=0$
+\begin{equation}
+H_0(X) = \log{|X|}
+\end{equation}
+
+is called the Hartley entropy (also `max-entropy'). It measures the cardinality of $X$, and equals the Renyi entropy of all orders when $X$ is uniformly distributed. 
+
+$H_1$ coincides with the Shannon entropy, where we define
+\begin{equation}
+H_1(X) \equiv \lim_{\alpha \rightarrow 1} H_\alpha
+\end{equation}
+
+This reduction is easily seen by applying L'Hopital's rule
+\begin{align}
+H_1(X)
+&= \lim_{\alpha\rightarrow1} \frac{1}{1-\alpha} \log \sum p_i^\alpha \nonumber \\
+&= \lim_{\alpha\rightarrow1} -1 \cdot \left(\sum p_i^\alpha\right)^{-1} \sum p_i^\alpha \log p_i \nonumber \\
+&= - \sum p_i \log p_i
+\end{align}
+
+Lastly, in the $\alpha\rightarrow\infty$ limit, let
+\begin{equation}
+H_\infty(X) \equiv \lim_{\alpha \rightarrow \infty} H_\alpha
+\end{equation}
+
+Relabelling the elements $X$ such that $p_1 \geq p_2 \geq ... \geq p_n$, where $n=|X|$, we observe that
+\begin{gather}
+p_1^\alpha \leq \sum_{i=1}^N p_1^\alpha \leq N p_1^\alpha \nonumber \\
+\implies
+\frac{\alpha \log p_1}{1-\alpha} \geq H_\alpha(\rho) \geq \frac{\alpha \log p_1 + \log N}{1- \alpha}
+\end{gather}
+
+where we have invoked the monotonicity of the logarithm. In the $\alpha\rightarrow\infty$ limit, this fixes $H_\infty(X) = -\log p_1$, which coincides with the min-entropy $H_\infty(X) = - \log \max_i p_i$. The min-entropy is so named because it is the smallest entropy measure in the family of Renyi entropies.
+
+
+
+
+These entropies for classical probability distributions may be generalised for applications in quantum information theory; in this context, they're often called `entanglement entropies,' which alludes to their importance as a quantification of the entanglement in a many-body quantum state. We denote these $S$, to distinguish them from their classical counterparts $H$. 
+
+Suppose $\rho$ is the density operator of quantum system. The von Neumann entropy $S(\rho)$ generalises the Shannon entropy, and is defined as
+\begin{equation}
+S(\rho) \equiv - \trace(\rho \log \rho)
+\end{equation}
+
+Diagonalising $\rho$ and invoking the invariance of the trace under unitary transformation, we see that if the eigenvalues of $\rho$ are $\{p_i\}$, $S(\rho)$ is also given by
+\begin{equation}
+S(\rho) = - \sum_i p_i \log p_i
+\end{equation}
+
+The von Neumann entropy has the following properties:
+
+\begin{itemize}
+
+\item $S(\rho) \geq 0$, with equality if and only if $\rho$ is pure. Thus, $\rho$ describes a mixed state if and only iff $S(\rho) \neq 0$.
+
+\item $S(\rho) \leq \log d$ where $\rho$ acts on a $d$-dimensional Hilbert space, with equality if and only if system is in completely mixed state $\rho=I/d$.
+
+\item $S(A,B) \leq S(A) + S(B)$, with equality if and only if $AB$ is a product state. (\emph{sub-additivity})
+
+\end{itemize}
+
+The joint entropy, conditional entropy, and mutual information in the quantum picture are defined analogously. Let $\rho^{AB}$ be the joint density matrix of systems $A$ and $B$. These quantities are respectively
+\begin{gather}
+S(A,B) \equiv - \trace(\rho^{AB} \log \rho^{AB}) \\
+S(A|B) \equiv S(A,B) - S(B) \\
+S(A:B) \equiv S(A) + S(B) - S(A,B)
+\end{gather}
+
+Naturally, the classical Renyi entropies generalise to
+\begin{equation}
+S_\alpha(\rho) \equiv \frac{1}{1-\alpha} \log \trace (\rho^\alpha)
+\end{equation}
+
+As with the von Neumann entropy, the quantum Renyis reduce to the classical Renyis over the probability distribution $\{p_i\}$, which are the eigenvalues of $\rho$.  We will call the set $\{S_\alpha\}_{\alpha=1}^\infty$ the Renyi entanglement spectrum.
+
+Not all properties of classical entropy transfer to their quantum counterparts. Most notably, the classical property $H(X) \leq H(X,Y)$, or equivalently $H(Y|X) \geq 0$, is violated by the quantum entanglement entropy; this violation is a signature of entanglement. For example, suppose $A$ and $B$ are in a Bell state. Then $AB$ is pure with $S(\rho_{AB})=0$, but $A$ and $B$ are each individually maximally entangled with $S(\rho_A)=S(\rho_B)=1$. Thus $S(\rho_A) > S(\rho_{AB}) \implies S(B|A)<0$. In general, if $\ket{AB}$ is pure, $A$ and $B$ are entangled if and only if $S(B|A)<0$. Note that this definition, therefore, does not correspond to asking about the entropy of $A$ conditioned upon fixing the state of $B$ -- such a quantity is guaranteed to be non-negative.
+
+The measurement-induced transition may be observed in a pure system $Q$ subject to continuous projective measurements. From our previous discussion, this is equivalent to a general measurement for a subsystem of $Q$. Suppose we perform a projective measurement, described by a set of orthogonal projectors $\{M_m\}$, on $Q$, which has density operator $\rho$, and do not uncover the measurement outcome. This transforms
+\begin{equation}
+\rho \rightarrow \rho' = \sum_m M_m \rho M_m
+\end{equation}
+
+From Klein's inequality, which is a statement about the non-negativity of quantum relative entropy, it may be shown that
+\begin{equation}
+S(\rho') \geq S(\rho)
+\end{equation} 
+
+with equality if and only if $\rho=\rho'$. Thus, projective measurements, if the measurement outcome is ignored, never decrease entropy.\footnote{Of course, if the measurement outcome is observed and the state is collapsed according to Equation \ref{eq_collapse}, the entropy can decrease.} However, general measurements can: this may be illustrated through the example of a qubit in the fully mixed state $\rho = (\dyad{0}{0} + \dyad{1}{1})/2$, measured with the operators $M_0 = \op{0}{0}$ and $M_1= \op{0}{1}$. This measurement, even when the measurement outcome is ignored, results in the pure state $\rho=\dyad{0}{0}$.
+
+% These results concerning measurement and entropy reflect the intuition that entropy can decrease in a non-isolated system --- general measurements do encompass such interactions with the outside --- but cannot decrease in an isolated system. 
+
+% http://sunmaph6.ma.tum.de/foswiki/pub/M5/Allgemeines/MA5105_2013S/Problems_11.pdf
+% https://physics.stackexchange.com/questions/184524/what-is-the-difference-between-general-measurement-and-projective-measurement
+
+
+
+
+
+
+
+\clearpage
+\section{The measurement-induced transition}
+
+\epigraph{\itshape ``Il faut aussi disposer de couvercles pour les pots, qui ne doivent jamais rester ouverts quand ils sont en service. Des assiettes font g\'en\'eralement l'affaire, et sont pr\'ef\'erables \`a des planchettes en bois, qui favorisent l'apparition de moisissures.''}
+
+
+Interacting many-body quantum systems typically evolve under unitary dynamics to states with entanglement proportional to the extensive size of the region. An example of a non-thermalising system wherein this entanglement spreading is suppressed is a system subject to repeated measurements. In the thermodynamic limit, these models feature a phase transition between an `entangling' and `disentangling' state.
+
+This behaviour is to some extent intuitive. Local unitary dynamics generate entanglement locally and incrementally, but projective measurements in the local basis collapse (possibly non-local) entanglement. For example, a Bell pair measured in a single-qubit basis collapses to a product state. In a system where both effects compete, a phase transition occurs as the frequency of measurement is tuned through some transition. Recent work suggests that that this measurement-induced criticality may be interpreted as a dyanmical purification transition on an initially mixed state \cite{gullans2019dynamical}. From the perspective of quantum information, this demonstrates the existence of a quantum error protected subspace, whose information is retained despite many local measurements.
+
+Random quantum circuits are tractable toy models that have been useful in the study of course-grained dynamics in variety of more physically realistic systems. They serve as a setting for the study of this transition. This class of models describes a qubit lattice\footnote{We also use `spin chain' interchangeably to refer to this spatial array of sites. A qubit with local Hilbert space dimension $q=2$ correspond to spin-$1/2$. Unless explicitly stated otherwise, our discussion concerns this $q=2$ case.} evolving under the application of local gates at discrete times. We study the $(1+1)$-dimensional case. Continuous local measurements are modelled by projective measurements of random sites at every timestep. Note that these random circuit models obey the physical principle of locality, but in general have no conserved charge, not even a conserved energy (the Hamiltonian description of the system is jettisoned in favour of the sequence of gates). Nevertheless, measurement-induced transitions are expected also in Hamiltonian systems \cite{tang2020measurement}. 
+
+In this work, we sample quantum gates exclusively from the Cliffords, enticed by the polynomial-time promises of the Gottesman-Knill theorem which makes large system sizes numerically accessible. Clifford circuits are sufficiently general to capture the entanglement transition, though there is also much literature of the phenomenon on Haar random circuits \cite{skinner2019measurement, zabalo2020critical, bao2020theory}. 
+
+
+
+
+
+\subsection{Bipartite entanglement entropy}
+
+The bipartite entanglement entropy of a system in a pure state is a quantitative answer to the question: `how entangled is this system?' For a pure composite system over subsystems $A$ and $B$, the bipartite entanglement entropy is the entropy of either of the reduced density operators $\rho_A$ or $\rho_B$. This relies on the property
+\begin{equation}
+S(\rho_A)=S(\rho_B) \text{ if } \rho_{AB} \text{ is a pure state}
+\end{equation}
+
+This is a consequence of the Schmidt's theorem, which states that $\ket{\psi_{AB}}$ of a pure composite system $AB$ has a decomposition
+\begin{equation}
+\ket{\psi} = \sum_n \sqrt{p_n} \ket{\psi_{n, (A)}} \ket{\psi_{n, (B)}}
+\end{equation}
+
+where the Schmidt states $\{\ket{\psi_{n, (A)}}\}$ and $\{\ket{\psi_{n, (B)}}\}$ are orthonormal and the Schmidt coefficients $\sqrt{p_n}$ satisfy
+\begin{equation}
+\sum_n p_n = 1,
+\quad
+p_n \in \mathbb{R},
+\quad
+p_n \geq 0
+\end{equation}
+
+A corollary of the Schmidt decomposition is that $\rho_A$ and $\rho_B$ are diagonal in the Schmidt basis with eigenvalues $p_n$.
+\begin{gather}
+\rho_A = \sum_n p_n \dyad{\psi_{n,(A)}} \\
+\rho_B = \sum_n p_n \dyad{\psi_{n,(B)}}
+\end{gather}
+
+This implies $S(\rho_A)=S(\rho_B)$ as advertised. Since the Schmidt spectra are identical for $A$ and $B$, we may choose the easier of $S(\rho_A)$ or $S(\rho_B)$ to compute. We use `unique' cuts to refer to set of all possible cuts up to this equivalence in the bipartite entropy.
+%For the purpose of computing the entanglement entropy, half of all possible bipartitions in a one-dimensional chain are `redundant.' 
+
+\begin{figure}
+\subfigure[Open boundary conditions.]{\includegraphics[width=0.6\textwidth]{fig_cut_obc.pdf}}
+\subfigure[Periodic boundary conditions.]{\includegraphics[width=0.4\textwidth]{fig_cut_pbc.pdf}}
+\caption{Bipartite cuts dividing the qubit lattice into subsystems $A$ (red) and $B$ (green). Here, two types of boundary conditions with $L=8$ systems are illustrated, where the cut is such that $\abs{A}=\abs{B}=L/2$. The bipartite entanglement entropy depends on the entanglement between sites on different sides of the cut, schematically illustrated by dashed grey lines.}
+\label{fig_bipartition}
+\end{figure}
+
+In the lattice model, we consider cuts that divide the system into contiguous bipartitions, as in Figure \ref{fig_bipartition}. The bipartite entanglement entropy depends on the particular choice of cut that defines the bipartition $A$ and $B$; however, the entropy of different cuts scale similarly with time and system size. This scaling behaviour is what is physically important.
+
+A quantum state is described as `area law' if the leading term of the bipartite entanglement entropy scales with the size of boundary between the two partitions. It is described as `volume law' if the bipartite entanglement entropy scales with the extensive volume of the partitions. In a lattice model, the volume measure is simply the number of sites. In a one-dimensional lattice, with a partition of size $L$, area law is $O(1)$ (the boundary set comprises two endpoints), and volume law is $O(L)$. In a two-dimensional lattice, with a partition of dimensions $L\times L$, area law is $O(L)$ and volume law is $O(L^2)$. 
+
+For general states, brute force calculation of bipartite entanglement entropies requires diagonalising the density operator, a computation which scales exponentially with $L$. However, for the stabiliser states to which we specialise, the entanglement entropy takes a simple form that may be computed in polynomial time. Consider a circuit bipartitioned into $A$ and $B=\bar{A}$. Then
+\begin{equation}
+S(\rho_A) = \abs{A} - r_A
+\end{equation}
+
+where $r_A$ is the number of independent generators with trivial support on $B$ (i.e. are identity restricted to $B$) \cite{li2019measurement, nahum2017quantum}. Appendix B outlines a derivation of this result. The derivation makes manifest that the density operator of a stabiliser state has eigenvalues $\in \{0,1\}$, with the important corollary that its Renyi entanglement spectrum is degenerate. Due to this degeneracy, the `entanglement entropy' of a stabiliser state refers unambiguously to any of the equivalent Renyi entropies. 
+
+The clipped gauge for stabilisers provide a further computational boost for computing expectations of the entanglement entropy. This is also discussed in Appendix B. In this work, we use the abbreviated notation $S(A)$ for $S(\rho_A)$.
+
+
+
+\subsection{Random circuit model and the critical phases}
+
+We now turn to a precise description of the prototypical setting for studying measurement-induced entanglement transitions, a one-dimensional length-$L$ lattice of qubits with nearest-neighbour interactions \cite{chan2019unitary, skinner2019measurement, li2018quantum}. The circuit is initialised in the trivial product state of all up spins ($\ket{0}$ in the local-$Z$ basis). Time evolution is determined by a brickwork pattern of local two-qubit gates, interspersed with a layer of random single-qubit projective measurements in the local $Z$-basis. Each site is measured with probability $p$. A schematic appears in Figure \ref{fig_brick}. Unless stated otherwise, we choose periodic boundary conditions to limit edge effects.
+
+Gates are drawn uniformly from the two-qubit Clifford group $C_2$. Thus, the many-body state of the circuit has at all times a stabiliser dscription. Because any $L$-qubit Clifford gate may be composed from $\{\text{Hadamard}, \text{phase}, \text{CNOT}\} \in C_2$, a brickwork architecture of gates is capable of reproducing any Clifford transformation after a sufficient number of timesteps, and thus allows the system to stochastically explore the full space of states stabilised by $\mathcal{P}_L$. The state remains at all times pure. The evolution of this pure wavefunction is called a quantum trajectory, and is fully determined by the sequence of applied gates and measurement outcomes. For $p\neq0$, measurements cause the dynamics to be non-unitary due to wavefunction collapse. Details regarding the simulation implementation appear in Appendix A.
+
+\begin{figure}
+\centering
+\includegraphics[trim={0, 0, 0, 1cm}, clip, width=0.6\textwidth]{fig_brick.pdf}
+\caption{Circuit architecture for unitary-projective dynamics, illustrated for a lattice of $L=8$ sites with periodic boundary conditions. Time extends in the vertical direction and space in the horizontal direction. Black dots represent qubits, blue block represent gates drawn uniformly from $C_2$, and open circles represent single-site projective measurements in the local $Z$ basis. Each timestep comprises two layers of two-qubit Cliffords, and each layer of gates is followed by measurements at each site probability $p$. (The left- and rightmost half-gates in odd layers are each half of the same $C_2$.) Two timesteps are illustrated.}
+\label{fig_brick}
+\end{figure}
+
+The measurement-induced transition is a crossing from volume-law entanglement at $p<p_c$ to area-law entanglement at $p>p_c$, for critical measurement probability $p_c$. The scaling behaviour of the bipartite entanglement entropy most naturally reveals this transition. After a circuit of $L$ sites is evolved for $L$ timesteps ($2L$ gate layers), which we observed was sufficiently late for dynamics to saturate in simulations, the bipartite entropy is computed from a cut of size $L/2$. The entropy may be estimated from (1) time averages in the late-time steady state, (2) averages over unique cuts of the same size, or (3) ensemble averages over random circuit realisations. Our results report averages of the latter two kinds.\footnote{For a single trajectory of Clifford evolution, the bipartite entanglement entropy $S \in \mathbb{Z}$. However, the averaged entropy $\ev{S}$ can take non-integer quantities, and is a smooth function on parameters such as $p$ or $t$.}
+
+Let $S(L/2)$ denote the entropy of a cut of size $L/2$. Our results are for a system with periodic boundary conditions cut like Figure \ref{fig_bipartition}(b). Figure \ref{fig_1} shows that $S(L/2) \propto L$ for $p<p_c$, and $S(L/2)\propto 1$ for $p>p_c$, where $p_c \approx 0.16$. At $p_c$, the scaling is $\propto \log{L}$. Thus $p_c \approx 0.16$ (an estimate we make more precise later) is the critical measurement probability, which marks the transition between the volume law phase at small $p$ and area law phase at large $p$. The same scaling behaviour emerges when $\abs{A}$ is some other fraction of $L$, and even in the dependence of $S(A)$ on $\abs{A}$ \cite{li2018quantum}. These cut protocols are all equivalent in that they capture whether the bipartite entropy depends on the extensive size of a bipartition or on its boundary. 
+
+\begin{figure}[t]
+\centering
+\includegraphics[trim={1cm 1cm 1cm 1.5cm}, clip, width=0.7\textwidth]{fig_ent1D.pdf}
+\caption{Entanglement entropy of $L/2$ cut vs. system size $L$ in a circuit with periodic boundary conditions, for several $p$. The scale is log-log. The transition from linear to constant scaling with $L$ suggests $p_c \approx 0.16$. Each data point is averaged over $10^3$ circuit realisations.}
+\label{fig_1}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[trim={1cm 1cm 1cm 1.5cm}, clip, width=0.7\textwidth]{fig_ent1D_dens.pdf}
+\caption{Entanglement entropy density $S/L$ of a $L/2$ cut vs. measurement probability $p$ in a circuit with periodic boundary conditions, for several $L$. Entropy densities appear to converge in the thermodynamic limit, with the $L=128$ and $L=256$ curves almost coinciding. Inset: data collapse of the entanglement entropy near $p_c$, according to a one-parameter power law.}
+\label{fig_2}
+\end{figure}
+
+These scaling behaviours have intuitive $p \rightarrow 0$ and $p\rightarrow1$ limits. When $p=$1, following each layer of gates, local measurement at every site fully disentangles the chain into a trivial product state. Thus the entanglement is zero at the end of every timestep. When $p=0$, two staggered brickwork gate layers can propagate entanglement two sites in both directions along the chain at each timestep. Though the circuit model makes no contact with relativistic principles, the locality of the gates thus defines a strict light cone of speed $c=2$, outside of which two operators must have vanishing correlations.\footnote{This strict light-cone is distinct from the butterfly light cone. The butterfly velocity $v_B \leq c$ captures the spreading of initially local operators; in this model the inequality is strict.} After $t=L/2$ timesteps of evolution, every site is timelike separated from all sites at $t=0$; eventually, entanglement dynamics saturate to their steady-state values in time $O(L)$. The linear scaling at $p=0$ is then explained by the late-time convergence to $L/2$ of the bipartite entropy of a $L/2$ cut, reflecting that the state is fully mixed. For intermediate $p$, the late-time bipartite entanglement entropy interpolates between these two regimes.
+% Lieb Robinson
+
+Figure \ref{fig_2} presents the same data with $p$ as the independent variable. It can be read as a phase diagram in the parameter $p$, with the volume-law phase left and area-law phase to of $p_c$. The large $L$ curves converge in the thermodynamic limit, such that the entropy density $\ev{S}/L$ vanishes in the area law and remains finite in the volume law. 
+
+A standard technique for studying scaling laws at critical phase transitions and in renormalisation group theory is finite size data collapse. By rescaling data and `collapsing' it into a non-trivial common curve, one can recover critical scaling exponents. In the literature of this measurement-induced transition on a spin chain, the natural choice of universal scaling ansatz is $(p-p_c) L^{1/\nu}$. This function has as a one-parameter power law dependence on the system size at the critical point $p_c$. The inset of Figure \ref{fig_2} shows a data collapse of the form
+\begin{equation}
+S(L/2) - S(L/2)\big|_{p_c} = f\left((p-p_c)L^{1/\nu}\right)
+\end{equation}
+
+The collapse is particularly good near $p_c$, reflecting the universality at the phase transition.
+
+
+
+
+\subsection{Analytic approaches}
+
+Despite substantial numerical evidence for the transition, it is poorly understood analytically. Progress made in \cite{jian2019measurement} proposes a correspondence between unitary-projective dynamics on a quantum circuit and a two-dimensional statistical mechanics model. Questions of entanglement entropy are then mapped onto a classical picture about the free energy cost of fluctuating domain walls associated with changing boundary conditions in the entanglement region. This approach reinterprets the volume-law and area-law as an order transition of the statistical mechanics model. The authors use a replica trick to establish this correspondence, and derive various critical exponents from conformal invariance considerations. 
+
+This replica approach and statistical mechanics analogy originated in \cite{vasseur2019entanglement}, which considers a general class of phase transitions without measurements. Taking a random matrix theory perspective, it proposes a holographic (in the AdS-CFT sense) description of the entanglement phase transition of a quantum many-body system. Entanglement is studied by placing the many-body system on the holographic boundary of a random tensor network.
+
+% \footnote{In the sense of the holographic duality, a dictionary of correspondances between conformal field theories and quantum gravity in anti-de Sitter space in one higher dimension.} 
+
+The statistical mechanics mapping is however rather involved. This section focusses two heuristic pictures for understanding measurement-induced criticality: percolation and KPZ surface growth. 
+
+\textbf{Classical percolation} supplies an intuitive picture that places analytic bounds on entanglement growth in unitary-projective dynamics \cite{nahum2017quantum, skinner2019measurement}. While its claims pertain to Haar random circuits, it remains a good heuristic for Clifford random circuits, which produce qualitatively similar dynamics.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth]{fig_cut.pdf}
+\caption{In the bond percolation picture, the entanglement entropy of the random unitary circuit is bounded by a `minimal cut.' The percolation dual (right) to a particular circuit realisation (left) is shown, where broken bonds corresponding to projectively measured sites are depicted by dashed lines, and unbroken bonds by solid lines. An example cut is shown, whose segments are red if it crosses a bond, and green if it crosses a broken bond with zero cost. Figure from \cite{skinner2019measurement}.}
+\label{fig_cut}
+\end{figure}
+
+Figure \ref{fig_cut} depicts the time evolution of a one-dimensional random quantum circuit, where the local Hilbert space dimension of each spin is some arbitrary $q \in \mathbb{Z}$. The vertical lines are `bonds' connecting qubit sites through time. Let the number of bonds crossed by a cut that bisects the circuit (Figure \ref{fig_cut}) be $S_\text{cut}$. The max-entropy $S_0$ corresonds to the minimal cut
+\begin{equation}
+S_0 = \min_\text{cut} S_\text{cut}
+\end{equation}
+
+This follows from counting the Schmidt rank of a bipartition of the circuit at the cut.
+
+A projective measurement causes the quantum state of a site at a particular timestep to be fully determined, collapsing the probability distribution at that state to the trivial one. Projective measurements are then modelled diagrammatically as breaking a bond in the percolation network.
+
+The cut may be conceptualised as a path that percolates through bonds of the lattice. Numerics for $S_0$ in a random unitary circuit shows excellent agreement with classical percolation results \cite{skinner2019measurement}. This percolation mapping suggests that analogous measurement-induced phase transitions are expected in higher dimensions, with the minimal cut generalising to minimal membranes.
+
+Percolation provides a heuristic explanation for the $L$ dependent scaling of the bipartite entropy in the two phases. Explanatory cartoons appear in Figure \ref{fig_perc}. In the volume-law phase, $S$ grows linearly with time, because the number of bonds traversed grows linearly with time when few bonds are broken by measurements. In the area-law phase, $S$ grows very little in time ($S \propto 1$), because only a few unbroken bonds must be traversed; the model almost fully percolates. At $p_c$, scale invariance at the critical point implies a `fractal' structure: roughly, each pocket of fully broken bonds is near a larger pocket of broken bonds. This means that a minimal cut reaches a pocket of $O(t)$ size in logarithmic time, `escaping' the circuit. 
+
+\begin{figure}
+\centering
+\subfigure[Small $p$ volume law.]{\includegraphics[width=0.3\textwidth]{fig_perc1.pdf}}
+\subfigure[$p=p_c$ phase transition.]{\includegraphics[width=0.3\textwidth]{fig_perc2.pdf}}
+\subfigure[Large $p$ area law.]{\includegraphics[width=0.3\textwidth]{fig_perc3.pdf}}
+\caption{Illustrations explaining the $L$-dependent scaling of the minimal cut in the percolation picture. White (grey) domains depict regions of broken (unbroken) bonds. The minimal cut appears in green when crossing white domains with zero cost, in red when crossing grey domains with finite cost. Figures from \cite{skinner2019measurement}.}
+\label{fig_perc}
+\end{figure}
+
+In the volume-law phase, the system's entanglement saturates its maximum value in time $t \sim L$. This is described as the steady state. In the percolation language, the minimal cut may exit to the side of the circuit for large $t$. Thus, the scaling of $S$ with time gives the scaling of steady state $S$ with $L$. 
+
+In the limit of $q \rightarrow \infty$ limit, the percolation result for $S_0$ discussed above holds for all Renyi entropies \cite{nahum2017quantum}. 
+
+
+
+
+The \textbf{Kardar-Parisi-Zhang description of surface growth} also details a bound for entanglement growth under random unitary dynamics \cite{nahum2017quantum}. Though this picture does not account for measurements, it provides useful intuition for the the small $p$ volume-law phase of unobstructed entanglement spreading. 
+
+Denote $S(x)$ the bipartite entropy of a one-dimensional quantum spin chain cut at bond $x$. The property of sub-additivity stipulates that the max entropy (and thus all Renyi entropies) of cuts at neighbouring bonds differ by at most one
+\begin{equation}
+\abs{S_0(x+1) - S_0(x)} \leq 1
+\end{equation}
+
+A generic two-qubit unitary gate at bond $x$ does not affect other bonds, but increases $S_0(x)$ to the maximal value allowed by the sub-additivity constraint
+\begin{equation}
+S_0(x,t+1) = \min\left(S_0(x-1,t), S_0(x+1,t)\right) + 1
+\end{equation}
+
+Since the Renyi entropies are upper bounded by the max-entropy $S_0$, the above equation generalises to a $\leq$ inequality for general $S_\alpha$. This is pictured in Figure \ref{fig_surfgrowth}. This sub-additivity constraint means unitary dynamics saturate $S$ to a pyramid profile over time. Importantly, this implies that entanglement entropy is proportional to the size of the smaller bipartition created by the cut.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{fig_surfgrowth.pdf}
+\caption{KPZ surface growth of the $S_0$ bipartite entanglement entropy. A gate applied at bond $x$ maximally increases $S_0(x)$. This surface growth uppper bounds $S_\alpha$, and is exact for all $S_\alpha$ as $q\rightarrow\infty$. Figure from \cite{nahum2017quantum}.}
+\label{fig_surfgrowth}
+\end{figure}
+
+Entanglement dynamics are thus modelled as stochastic surface growth, where the stochasis enters in the choice of the bond at which a random unitary acts. In the continuum limit, these noisy dynamics realise the universal properties of the Kardar-Parisi-Zhang equation
+\begin{equation}
+\pdv{S}{t} = \nu \partial_x^2 S - \frac{\lambda}{2} (\partial_x S)^2 + \eta(x,t) + c
+\end{equation}
+
+where $\eta(x,t)$ is white noise, $c$ is the constant average growth rate, and $\nu,\lambda$ are other parameters. As with percolation, $q \rightarrow \infty$ is a deterministic limit wherein the entire Renyi spectrum evolves according to the rule for $S_0$ \cite{nahum2017quantum}.
+
+
+% For finite $q$, the percolation and KPZ (for $p=0$) pictures are exact for $S_0$ but only bound the smaller Renyi entropies. Because Cliffords form a 2-design and thus reproduce the von Neumann entropies $S_1$ of the Haar unitaries, these heuristic pictures provide a bound on the (entire degenerate) Clifford entanglement spectrum. For $q\rightarrow\infty$, they give exact results for the Cliffords, as they do for the unitaries.
+
+% One great utility of restricting general unitary gates to Cliffords only is the complete degeneracy of the Clifford Renyi spectrum. Consequently, the percolation and KPZ (for $p=0$) pictures provide exact analytics for all Clifford entanglement entropies, for finite $q$, including our case of $q=2$.
+
+
+
+\subsection{Probes of the critical transition}
+
+It is difficult to extract $p_c$ precisely from the scaling behaviour of bipartite entropy, due to logarithmic growth at the critical point. In this section, we discuss some alternative probes of the entanglement transition, and reproduce their results.
+
+Consider the \textbf{tripartite mutual information} (TMI) between three systems $A,B,C$, defined by
+\begin{align}
+I_3(A:B:C) 
+&= I(A:B) + I(A:C) - I(A:BC) \\
+&= S(A) + S(B) + S(C) - S(AB) - S(AC) - S(BC) + S(ABC) 
+\end{align}
+
+The TMI can be used to detect the measurement-induced transition, and empirical evidence suggests that it has reduced finite size effects \cite{gullans2019dynamical, zabalo2020critical}. For our purposes, let $A,B,C$ be mutually contiguous subregions of length $L/4$ in a one-dimensional periodic chain of length $L$. The TMI measures the extent to which information is shared non-locally in the circuit; thus, it is sometimes called the topological entanglement entropy. For pure states, $I_3(A:B:C)$ is symmetric under permutations of $A,B,C,D$, where $D$ is the remaining contiguous subregion of length $L/4$ complementary to $A \cup B \cup C$ in the chain. Thus for each circuit realisation, we can average over $L/4$ inequivalent cuts.
+
+To estimate the late-time TMI, the circuit is evolved from a trivial product state for time $2L$ under random gates and measurements with probability $p$. To reduce odd-even effects inherent to the brickwork geometry, we average two estimates of the TMI in the final timestep: once computed after the second last gate layer, and again after the last gate layer.
+
+\begin{figure}
+\centering
+\subfigure[TMI over a wide $p$ range. Each point represents $6\cdot10^4$ estimates averaged over the unique cuts of each circuit realisation.]{\includegraphics[trim={0 0 0 0}, clip, width=0.55\textwidth]{fig_tmi_wide.pdf}}
+\subfigure[Left: TMI near criticality illustrates scale invariance at the transition point. The crossing suggests $p_c=0.157$ (dashed black line). Right: data collapse of the TMI, with scaling function $(p-p_c) L^{1/\nu}$, at $\nu=1.3$. Each point represents $1.5\cdot10^5$ estimates averaged over the unique cuts of each circuit realisation.]{\includegraphics[trim={2cm 0 3cm 0}, clip, width=0.95\textwidth]{fig_tmi_near.pdf}}
+\caption{Tripartite mutual information (TMI) at late times of a qubit lattice with periodic boundary conditions, for $L=16,20,32,48$.}
+\label{fig_tmi}
+\end{figure}
+
+Figure \ref{fig_tmi}(a) shows that the TMI is negative and scales with $L$ in the volume law phase. It approaches zero in the area law phase, reflecting the curbed spread of information at large $p$. At $p_c$, the TMI is finite and universal; this $L$-independence allows the transition point to be estimated from the intersection of TMI curves for different $L$ as in Figure \ref{fig_tmi}(b). We find $p_c = 0.157$, and good data collapse for the scaling function $(p-p_c) L^{1/\nu}$ with $\nu\approx1.3$.
+
+% A disadvantage of the TMI is its that like the bipartite entropy, its computation requires $O(L^3)$ time. 
+
+In experimental settings, quantities such as the entanglement entropies and mutual information face scalabilty difficulties, because they require observation of an extensive number of sites over the entire system. In \cite{gullans2019scalable}, a \textbf{single-qubit reference probe} is introduced as a scalable probe of the measurement-induced transition. It is a reference qubit initially maximally entangled with the qubit lattice. The circuit is first `scrambled' into a random entangled stabiliser state, by evolving it for time $L$ with brickwork staggered gates and no measurements. Then, a single site in the lattice is measured and maximally entangled with the reference probe using a CNOT gate. The system further evolved for $L$ timesteps, with random measurements with probability $p$. The order parameter is the entropy $\ev{S_\text{probe}}$ of the reference qubit at the end of this procedure. Reference probes are also used to extract critical exponents related to the two-point correlation order parameter in the (1+1)-dimensional Clifford circuit; their numerics demonstrate excellent agreement with analytic results in (2+0)-dimensional percolation \cite{gullans2019scalable, zabalo2020critical}. 
+
+Once a probe becomes completely disentangled from the circuit, its entanglement entropy never increases from zero, since it has no further interactions. $\forall p>0$, this occurs with finite probability, so the single probe order parameter approaches zero. The volume and area law are thus distinguished by the timescale of purification. Deep in the area law phase, measurements rapidly disentangle the system from the reference, and $\ev{S_\text{probe}}$ rapidly decays to 0. This reflects the entanglement collapse of the system towards a product state wherein the subsystems are purified. Deep in the volume law, scarce measurements tend to preserve the entanglement between the system and reference. $\ev{S_\text{probe}}$ remains close to 1, decaying only at exponentially long timescales. This reflects that circuit remains close to maximally mixed. 
+
+Our numerics for the circuit averaged $\ev{S_\text{probe}}$ as a function of post-insertion time are presented in Figure \ref{fig_probe1pt}(a,b,c). We use periodic boundary conditions. The transition sharpens in the thermodynamic limit; by $L=128$, the probe visibly purifies on sub-$L$ timescales in the $p > p_c$ phase. It is expected to purify in $O(L)$ at $p_c$ \cite{gullans2019scalable}. In Figure \ref{fig_probe1pt}(d), we plot the entanglement entropy of the probe at time $L$ after insertion against the measurement probability $p$. The curves for different $L$ cross at the critical point, which we estimate at $p_c=0.158$. The fall-off in $\ev{S_\text{probe}}$ around $p_c$ also sharpens as $L\rightarrow\infty$, and as the time evolved post-insertion is increased to larger $O(1)$ multiples of $L$.
+
+\begin{figure}
+\centering
+\subfigure[$L=32$.]{\includegraphics[trim={1cm 0.5cm 2cm 1cm}, clip, width=0.49\textwidth]{fig_probe1pt_L32.pdf}}
+\subfigure[$L=64$.]{\includegraphics[trim={1cm 0.5cm 2cm 1cm}, clip, width=0.49\textwidth]{fig_probe1pt_L64.pdf}}
+\subfigure[$L=128$.]{\includegraphics[trim={1cm 0.5cm 2cm 1cm}, clip, width=0.49\textwidth]{fig_probe1pt_L128.pdf}}
+\subfigure[$S_\text{probe}$ at time $L$ post-insertion.]{\includegraphics[trim={1cm 0.5cm 2cm 1cm}, clip, width=0.49\textwidth]{fig_probe1pt.pdf}}
+\caption{Time evolution of the entanglement entropy of a single-qubit reference probe for $L=32,64,128$ appear in panels (a,b,c). Each curve is averaged over $5\cdot10^3$ circuit realisations. Entanglement entropy of the single-qubit reference probe at time $L$ post-insertion, for these three values of $L$, appear in panel (d). The crossing suggests $p_c=0.158$ (dashed black line).}
+\label{fig_probe1pt}
+\end{figure}
+
+% Related to this approach is the two-point correlator probe, which has been used to extract the critical exponent for a bulk order parameter of the (1+1)-dimensional Clifford circuit. This two-point function is the mutual information between two reference qubits attached to antipodally opposite sites separated by $L/2$ on periodic length $L$ chain, or end sites separated by $L$ on an open chain. Numerics show that the critical exponent of this order parameter, extracted by evolving the circuit at $p_c$ with two-point probes inserted, has excellent agreement with analytic results in (2+0)-dimensional percolation \cite{gullans2019scalable, zabalo2020critical}. 
+
+% Our numerics for the two-point correlation show that at small $p$, very little mutual information develops due to scrambling, and at large $p$, the mutual information plateaus to a value below that at $p_c$. We conjecture the latter is due to the generation of a Bell pair between the probes (when the sites to which they are attached are entangled and then measured). By the monogomy of entanglement, and the absence of further interactions between the circuit and reference probes, the probes become forever maximally-entangled with each other. Consequently, the ensemble-averaged mutual information is nonzero even deep into the area law. The situation described becomes rare in the large $L$ limit, but this finite size effect compromises the two-point function's ability to discern the critial transition.
+
+
+Finally, \cite{li2019measurement} studied the mutual information between two antipodal subsystems $A$ and $B$ in a periodic chain, of size $\abs{A}=\abs{B}=L/8$. This \textbf{L/8 mutual information} has a finite peak centred at $p=p_c$, and decays to zero into the area and volume law phases. This peak is wide for small $L$, but sharpens as $L\rightarrow\infty$. Though it is a weak signal ($I(A:B)\big|_{p_c} \sim 0.04$ for $L=512$), finite scaling analysis shows good data collapse with 
+\begin{equation}
+I(A:B) = f((p-p_c) L^{1/\nu}),
+\quad
+\nu = 1.3
+\end{equation}
+where $f(x) \propto \exp(-c \abs{x}^\nu)$, $c\in\mathbb{Z}$ is some non-universal constant \cite{li2019measurement}. 
+
+Deep in the area law, frequent local measurements prevent entanglement growth across the extensive $3L/8$ separation between $A$ and $B$. Deep in the volume law, measurements are so infrequent that the many-body state thermalises. Bipartite entanglement entropies then scale with the size of the cut, and at $p=0$ exactly, $S(A)=S(B)=L/8$ and $S(AB)=L/4$. Thus the $L/8$ mutual information vanishes at both extremes of $p$, but long-range correlations characteristic of phase transition are responsible for the finite $p_c$ peak.
+
+
+
+
+\clearpage
+\section{Entanglement dynamics with delayed measurements}
+
+\epigraph{\itshape ``La pr\'eparation traditionelle m'a \'et\'e indiqu\'ee par un ami moine bouddhiste --- il s'agit d'un m\'elange \`a part approximativement \'egales de pommes, carottes, oignons, auxquels on rajoute une bonne quantit\'e de sucre blanc ... le tout dans un pot en terre.''}
+
+In the usual setting for the measurement-induced entanglement transition, measurements are modelled by projections, which collapse the superposition of many-body states occupied by the spin chain. This picture of irreversible collapse is appropriate if the system is studied in isolation. Physically, however, measurements imply the development of quantum correlations between the system and a measurement appratus. A more realistic account of measurements must treat the measurement register quantum mechanically, as part of the composite system, and capture its entanglement with the principal system. This account is fully unitary, and describes the principal system as a mixed state over the ensemble of quantum trajectories corresponding to distinct measurement outcomes.
+
+\subsection{Model and motivation}
+
+Consider the one-dimensional random circuit evolving by familiar brickwork architecture (Figure \ref{fig_brick}). We use a system of ancilla qubits,\footnote{In the discussion to follow, `ancillae' refer to these ancilla qubits, while `qubits' is reserved for sites in the unitarily evolving principal circuit.} initalised in the $\ket{0}$ state, to model the measurement apparatus. After every layer of gates, a CNOT gate is applied with probability $p$ between every qubit and an untouched ancilla indexed by that site and timepoint. This gate maximally entangles the ancilla and qubit, and replaces projective measurement in the former model. Figure \ref{fig_ancilla} illustrates this protocol. The ancillae have no dynamics of their own, only evolving by virtue of their entanglement with the principal circuit. At the end of some period of unitary time evolution, all ancillae are projectively measured, leaving the main circuit in a pure state.
+
+We interpret this construction as a model where measurements are deferred to the end of unitary dynamics. We refer to the state as `pre-measurement' when the ancillae are entangled with the system, and `post-measurement' when every ancilla is projectively measured in the local $Z$ basis. The ancillae serve as registers for the measurement outcome; measuring them selects one particular trajectory of the quantum circuit. 
+
+% Though we have drawn the circuit in a two-dimensional grid for clarity as to the space and time, this is a misleading topology. The ancilla have no dynamics of their own. Rather, the connectivity of the ancilla to the circuit is more aptly described by a `cloud' of ancillae each individually coupled to a single qubit each time evolving circuit. This reflects the connectivity of each ancilla to its respective qubit, and the irrelevance of the sequence in which the ancillae are measured.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{fig_ancilla.pdf}
+\caption{The composite circuit plus ancilla system, which implements delayed measurements. Time extends in the vertical direction and space in the horizontal direction. The principal qubit lattice is represented by black circles, embedded in a blue slab representing unitary time evolution in the brickwork architecture (Figure \ref{fig_brick}). Ancillae are represented by grey circles. Each half-timestep is equipped with a $L$ fresh ancillae, each of which is coupled with probability $p$ to its respective qubit. Coupled ancillae are outlined in black. After $t$ timesteps of evolution, there are $t\cdot L$ ancillae. Spatial bipartitions are defined by vertical cuts, which group ancillae with their respective qubits.}
+\label{fig_ancilla}
+\end{figure}
+
+For precision, we define the class of quantum channels that characterises this ancilla model. This formal description is adapted from \cite{gullans2019scalable}. Consider a length $L$ system to be time evolved for $\tau$ timesteps. Assume $L$ is even for simplicity. We initialise all qubits and ancillae in the local $\ket{0}$, such that respectively, their many-body states are the trivial product states
+\begin{align}
+&\ket{\phantom{\big|}\vec{\psi}(t=0)\phantom{\big|}} 
+= \ket{\phantom{\big|}0_1 \ ... \ 0_L\phantom{\big|}} \\
+&\ket{\phantom{\big|}\vec{m}(t=0)\phantom{\big|}} 
+= \ket{\phantom{\big|}0_{1,t=1} \ ... \ 0_{L,t=1} \ ... \ 0_{1,t=\tau} \ ... \ 0_{L,t=\tau} \phantom{\big|}}
+\end{align}
+
+Let $W_{a,b}$ be a random two-qubit Clifford acting at sites $a$ and $b$. In the brickwork architecture with periodic boundary conditions, time evolution at some timestep $t \in \mathbb{Z}$ is implemented by the composition of the unitaries
+\begin{align}
+&U_{t-\frac{1}{2}} =  W_{1,2} \otimes ... \otimes W_{L-1,L} \\
+&U_{t} = W_{2,3} \otimes ... \otimes W_{L-2,L-1} \otimes W_{L,1}
+\end{align}
+
+Let $V_t$ be the unitary gate that applies a CNOT between each qubit and ancilla with uniform probability $p$. Let $\vec{m}$ index a particular state of the ancillae, in the many-body Fock basis of local $Z$ states. Time evolution is implemented by\footnote{The time ordering is such that earlier gates are to the left.}
+\begin{equation}
+K_{\vec{m}} = \mathcal{T} \bigg[ \prod_{t=1}^\tau \bigg(V_t U_t V_{t-\frac{1}{2}} U_{t-\frac{1}{2}}\bigg) \bigg]
+\end{equation}
+
+% \begin{equation}
+% \rho_\text{anc.} = \dyad{\vec{m}}
+% \end{equation}
+Denoting $\rho = \dyad{\vec{\psi}(0)}$ the initial density matrix on the principal circuit, dynamics are described by the channel $\mathcal{N}$
+\begin{equation}
+\rho \rightarrow
+\mathcal{N}(\rho) 
+= \sum_{\vec{m}} K_{\vec{m}} \bigg(\rho \otimes \dyad{\vec{m}(0)}\bigg) K_{\vec{m}}^\dagger 
+= \sum_{\vec{m}} \rho_{\vec{m}} (\tau) \otimes \dyad{\vec{m}(\tau)}
+\end{equation}
+
+Measurement of the ancillae at the end of unitary evolution corresponds to collapsing to a pure state $\rho_{\vec{m}}$ on the principal circuit. This corresponds to selecting a single trajectory consistent with the measurement outcome $\vec{m}$, and discarding all others. 
+
+% It is in this sense that the ancillae at $t=\tau$ allow one to `unravel' the unitary dynamics. 
+
+The former model without deferred measurements has a very similar channel description. There are no ancillae, and non-unitary local projections $P_t$ replace the unitary $V_t$. Only the quantum trajectory consistent with the measurement outcome is retained, so simply
+\begin{equation}
+\rho \rightarrow K_{\vec{m}} \rho K_{\vec{m}}^\dagger
+\end{equation}
+
+where $\vec{m}$ indexes that measurement outcome. Helpfully, this channel description manifests the equivalence between the former model and the ancilla model post-measurement.
+
+
+% Instead of doing the measurements, do a unitary evolution where each (former) measurement is instead a gate coupling to an ancilla (one fresh ancilla for each former measurement).  This system then is unitary and in the (formerly) area-law phase it becomes volume-law entangled (once we include these ancillae and do not project them).  But in the area-law phase this “full” system (including ancillae) is a QDL: if you then do a measurement of all the ancillae, the remainder of the system disentangles.
+
+\begin{figure}[t]
+\centering
+\includegraphics[trim={3cm 0 3cm 0}, clip, width=0.9\textwidth]{fig_anc_pbc.pdf}
+\caption{$L/2$ bipartite entanglement entropies in a delayed measurement model with ancillae, after unitary evolution for time $L$. Cuts group ancillae with their respective qubits. The pre-measurement entropies (left) are time law for all $p$ (which appears `volume law' because each system is evolved for $L$ timesteps). The post-measurement entropies collapse to those of a vanilla model without delayed measurements.}
+\label{fig_anc_pbc}
+\end{figure}
+
+A natural question is whether the measurement-induced transition emerges in the act of recording measurement outcomes in the ancillae (pre-measurement), or in the act of realising a single quantum trajectory (post-measurement). It turns out that the answer is the latter: when measurements are delayed, there is no transition in a pre-measurement state. Taking our cuts to be vertical in Figure \ref{fig_ancilla}, such that the ancillae are grouped with their respective qubit, we compute the pre- and post-measurement $L/2$ bipartite entropies in the system with ancillae after $L$ timesteps of unitary evolution. The results appear in Figure \ref{fig_anc_pbc}. On either side of the critical probability $p_c$, the pre-measurement state becomes time-law entangled. This is a consequence of the number of entangled ancillae growing linearly with time. The ancillae attached to different qubits are entangled across the cut by unitary dynamics. Post-measurement, entanglement entropies collapse as expected to familiar results of Figure \ref{fig_1}. 
+
+
+
+
+
+\subsection{Mutual information}
+
+Since the pre-measurement bipartite entropy scales similarly all $p$, it will be convenient to study instead the mutual information. We want to be more precise about the idea that the characteristics of the measurement-induced transition only appear in the post-measurement state.  What happens when only some fraction of the ancillae are measured?
+
+Consider subsystems $A$ and $B$, which are regions at opposite ends of an open one dimensional chain with ancillae. Let $\abs{A}=\abs{B}=L/3$, such that $A$ and $B$ are separated by $L/3$. We call $I(A:B)$ the $L/3$ mutual information. Figure \ref{fig_ancL3} shows the circuit averaged $L/3$ mutual information, as a function of $f$, the fraction of ancillae that are projected at the end of time evolution. $f=0$ obtains the pre-measurement state, and $f=1$ the post-measurement state.
+
+% \begin{figure}[h!]
+% \centering
+% \includegraphics[trim={3cm 1cm 3cm 1cm}, clip, width=0.9\textwidth]{fig_anc_L3.pdf}
+% \caption{Mutual information between end $L/3$ regions for a system with open boundary conditions, as a function of the measurement probability $p$, when a fraction $p_\text{anc.}$ of the ancillae are measured at the end of unitary evolution. Each curve is a different $p_\text{anc.}$, with the pre- and post-measurement limits appearing bolded.}
+% \label{fig_anc_L3}
+% \end{figure}
+
+\begin{figure}
+\centering
+\subfigure[]{\includegraphics[trim={0.5cm 0.7cm 1cm 1cm}, clip, width=0.45\textwidth]{fig_ancL3_24.pdf}}
+\subfigure[]{\includegraphics[trim={0.5cm 0.7cm 1cm 1cm}, clip, width=0.45\textwidth]{fig_ancL3_48.pdf}}
+\subfigure[]{\includegraphics[trim={0.5cm 0.7cm 1cm 1cm}, clip, width=0.45\textwidth]{fig_ancL3_72.pdf}}
+\subfigure[]{\includegraphics[trim={0.5cm 0.7cm 1cm 1cm}, clip, width=0.45\textwidth]{fig_ancL3_96.pdf}}
+\caption{Mutual information between end $L/3$ regions for a system with open boundary conditions, normalised to $L$. The main plots show $I(A:B)/L$ as a function of the measurement probability $p$, when a fraction $f$ of the ancillae are measured at the end of unitary evolution. Each curve is a different $f$, with the pre- and post-measurement limits appearing bolded. Insets: from the same data, $I(A:B)/L$ is plotted as a function of $f$, where each curve is a different $p$. Legends in (d) apply to all plots.}
+\label{fig_ancL3}
+\end{figure}
+
+In the pre-measurement state, the $L/3$ mutual information decays smoothly as a function of $p$, from $I(A:B)=L/3$ at $p=0$,\footnote{Without measurements, the chain thermalises such that entanglement is proportional to the size of the cut, and $I(A:B) = S(A) + S(B) - S(AB) = L/3+L/3-L/3=L/3$.} so that it vanishes in the (former) area law $p>p_c$. This corresponds to the behaviour in a vanilla system without delayed measurements. Pre-measurement, however, the mutual information has time-law growth for sufficently small $p$, but never develops for large $p$. The pre-measurement peak $\max_p I(A:B)=2L/3$ is consistent for all $L$. There exists some range of measurement probabilities for which, remarkably, $L/3$ mutual information is zero pre-measurement, and becomes non-zero post-measurement. Informally, projectively measuring all ancillae `migrates' the entanglement accumulated in the ancillae into the principal circuit. This process leaves the ancillae totally decoupled and generates non-zero long-range mutual information in principal circuit.
+
+The physical picture that emerges is the spatial localisation of mutual information. As the system of delayed measurements is time evolved, entanglement grows linearly in the time direction (vertical direction in Figure \ref{fig_ancilla}). This entanglement correlates each qubit and its column of ancillae. Consistent with the monogamy of entanglement, these deferred measurements suppress the entanglement growth in the spatial direction (horizontal direction in Figure \ref{fig_ancilla}). Consequently, the pre-measurement $L/3$ mutual information vanishes even for $p<p_c$. 
+
+A surprising feature of the $L/3$ mutual information is that its maximum is attained for some intermediate value of $f$. For example, in the $L=96$ subplot of Figure \ref{fig_ancL3}, at $p=0.02$, $I(A:B)$ rises to a maximum for $f\approx0.6$, before falling to a nonzero value as $f\rightarrow1$. This non-monotonicity suggests that the measurement of ancillae does not always have the incremental effect of increasingly entangling the principal qubits, even for those values of $p$ for which that is the net result after all of the ancillae are projected.
+
+% Vedika: This raises the question of whether the effect of measuring ancillas in this model is always to entangle, even at large p. Or is there something non-monotonic where the entanglement increases when you measure ancillas, up to some point, and then goes back down as you measure the remaining ancillas? 
+
+
+For the $L/8$ mutual information, we found that the pre-measurement mutual information vanishes; post-measurements, the finite peak described in Section 3.4 appears, reproducing the results of \cite{li2019measurement} for the one-dimensional chain. 
+
+
+
+
+\subsection{Correlation length and exponent}
+
+\begin{figure}
+\centering
+\includegraphics[trim={3.2cm 2cm 3.5cm 2cm}, clip, width=0.9\textwidth]{fig_corlen.pdf}
+\caption{Pre-measurement mutual information between end regions $A$ and $B$ on an open chain with ancillae, as a function of their separation. Each panel displays data for one system size, and each curve is a different measurement probability. If the circuit is evolved out for longer times, mutual information increases linearly for separations less than $\xi(p)$, but the `elbow' marking $\xi(p)$ remains constant.}
+\label{fig_corlen}
+\end{figure}
+
+The results of the previous section show that there is a $L$-dependent range of measurement probabilities $p$, for which no mutual information exists in the pre-measurement state, but appears in the post-measurement state. This suggests that there exists a finite $p$-dependent correlation length $\xi(p)$ in the pre-measurement state of the qubit lattice. In this section, we extract the scaling dependence of $\xi$ on $p$.
+
+Consider the mutual information between two equally-sized regions $A$ and $B$ located at opposite ends of an open chain. $A$ and $B$ are fully defined by their separation $r$, which takes some value $r \in [0,L)$ (0 is the limit where $A$ and $B$ are contiguous, $L$ is the limit where they are the empty set). After evolving the delayed-measurement system from a trivial product state for $L$ timesteps, we measure the mutual information $I(A:B)$, whose circuit-averaged values appear in Figure \ref{fig_corlen}. We find that for all non-zero measurement probability $p$, the mutual information falls off as the separation increases and vanishes beyond some correlation length $\xi(p)$. 
+
+$\xi(p)$ is independent of system size, and is fixed even when the circuit is evolved out to longer times. Indeed, regions with sub-correlation-length separation exhibit time-law accumulation of mutual information, as the number of entangled ancillae scales with $O(t)$. However, beyond correlation-length separations, mutual information remains zero. The correlation length diverges as $p\rightarrow0$ and decays smoothly as $p$ increases; in particular, no sharp behaviour occurs at the critical $p_c$ separating the (former) volume and area law phases. This decay is consistent with the picture that entanglement growing between a qubit and its ancillae prevents correlations from spreading extensively through a circuit, by monogamy.
+
+Numerically, we define $\xi$ as the separation $r$ which maximises 
+\begin{equation}
+\pdv[2]{I(A:B)}{r}
+\end{equation}
+
+This identifies the sharp `elbow' of the curves in Figure \ref{fig_corlen}. Figure \ref{fig_corexp} shows the correlation length $\xi(p)$ we extracted from Figure \ref{fig_corlen}. Barring finite size effects for small $L$, $\xi(p)$ appears to converge in the thermodynamic limit to a power law of the form
+\begin{equation}
+\xi(p) \propto p^{-\nu}
+\end{equation}
+
+In the table of Figure \ref{fig_corexp}, we extract the exponent $\nu$ for different system sizes. We conjecture $\nu$ is some universal constant in the thermodynamic limit, around $\approx0.8$. 
+
+In summary, we introduced in this section a delayed measurement perspective to model the entanglement between the principal spin system and the measurement apparatus formed by ancillae. We find that the phase transition at $p_c$ is lost in the pre-measurement state; instead, for all $p\neq0$, entanglement grows linearly in the `time direction' of the ancilla grid but is localised in the spatial direction. Long-range correlation, captured by the mutual information, absent in the pre-measurement state emerges in the post-measurement state after all ancillae are measured; however, this migration of the entanglement does not depend monotonously on the fraction $f$ of ancillae measured. We extract the correlation length associated with this localisation in the pre-measurement state, which diverges as $p$ approaches zero.
+
+\begin{figure}
+\centering
+\begin{minipage}{0.6\linewidth}
+\includegraphics[trim={1cm 0 2cm 0}, clip, width=1\textwidth]{fig_corexp.pdf}
+\end{minipage}
+\hspace{1cm}
+\begin{minipage}{0.25\linewidth}
+\begin{tabular}{l l}
+\hline
+system size & $\nu$ \\
+\hline
+$L=48$ 	& 0.632 \\
+$L=72$ 	& 0.725 \\
+$L=96$ 	& 0.753 \\
+$L=144$ & 0.779 \\
+$L=192$ & 0.789 \\
+\hline
+\end{tabular}
+\end{minipage}
+\caption{Left: correlation length as a function of $p$. Black dashed line shows a fit of the form $p^{-\nu}$. Inset: same data on a log-log scale. Right: critical exponent of the correlation length $\xi(p) \propto p^{-\nu}$ for five system sizes.}
+\label{fig_corexp}
+\end{figure}
+
+
+
+
+
+ 
+\clearpage
+\section{Clifford spectral statistics}
+
+\epigraph{\itshape ``[C']est chose des plus simples et il n'y a aucun probl\`eme d\`es qu'on lui consacre un minimum d'intelligence et de soin ... Le r\'efrig\'erateur est \`a bannir.''}
+
+The theoretical interest in the measurement-induced entanglement transition is situated within the study of chaotic many-body quantum systems. Random matrix theory has been a highly versatile and successful signature of quantum chaos. It characterises general classes of systems constrained only by their symmetries, without the physical specificity of an explicit Hamiltonian or unitary time evolver. 
+
+In the previous chapters, we studied entanglement transition phenomena that exists in general unitary circuits, but restricted our gates to the 3-design subgroup of Cliffords. This motivates us to ask how the level statistics of general unitary evolution operators, whose relationship to a particular random matrix ensemble is well-established, change when we restrict reduce our symmetry group to the Cliffords. This chapter is devoted to chaotic Clifford dynamics. 
+
+In addition to their importance in quantum error correction and simulation, Clifford gates may be easily augmented to a universal gate set. A recent numerical study showed that inserting a single $\pi/8$ gate in a random Clifford circuit is sufficient to recover the Wigner-Dyson distribution of the entanglement spectrum, matching the random matrix theory description of Haar random gates \cite{zhou2019single}. 
+
+In this section, we study Clifford Floquet circuits. Unlike random circuits which are random in both space and time, Floquets are random in space but periodic in time. Floquets model periodically driven systems, whose Hamiltonians have the form
+\begin{equation}
+\mathcal{H}(t) = \mathcal{H}(t+\tau)
+\end{equation}
+
+for some period $\tau$. Unitary-projective dynamics in Floquet models have also been studied, and they also support a measurement-induced entanglement transition \cite{li2018quantum, skinner2019measurement}.
+
+Moreover, analogous to Bloch's theorem for for systems with space-translation symmetry, Floquet's theorem for systems with time-translation symmetry ensures that such a system has a well-defined spectrum. This makes Floquets amenable to the study of spectral statistics, using tools from random matrix theory.
+
+Our model is a one-dimensional, $L$-site Floquet $U$ applied at each timestep. $U$ comprises two layers of nearest neighbour two-qubit Cliffords staggered in the brickwork architecture, as illustrated in Figure \ref{fig_floquet}. There are no measurements, so time evolution is purely unitary. The $C_2$ constituents of $U$ are randomly selected for a particular circuit realisation, but thereafter, dynamics are deterministic as this Floquet repeats infinitely in time. Because $U$ implements time evolution, it has an associated Hamiltonian $H$ by
+\begin{equation}
+U = e^{-iH}
+\end{equation}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{fig_floquet.pdf}
+\caption{The Floquet block, which evolves the system one timestep, is constructed in the familiar brickwork architecture from two layers of gates (blue blocks) drawn uniformly from $C_2$. Time extends in the vertical direction and space in the horizontal direction. Illustrated is a lattice of $L=8$ sites with periodic boundary conditions. Floquet circuit dynamics are implemented by tiling this bilayer in the vertical direction.}
+\label{fig_floquet}
+\end{figure}
+
+
+
+
+
+\subsection{Chaos, integrability, and random matrix theory}
+
+First, we contextualise the discussion of Clifford spectral statistics with an overview of quantum chaos. 
+
+In classical systems, the presence of chaos may be captured by a positive Lyapunov exponent, which quantifies the divergence in the $x$-$p$ phase space of two systems whose initial conditions are infinitessimally separated, as they evolve in time. This is popularly known as the butterfly effect. However, such a diagnostic does not naturally generalise to the quantum setting, because any effective quantum phase space that one may construct suffers from the constraints of the uncertainty principle, which means that trajectories are ill defined. 
+
+Rather, in ergodic quantum many-body systems, a comparable dynamic signature is the butterfly effect in the out-of-time-order correlator (OTOC), which captures the spreading with time of local operators. The OTOC has been studied with regards to the scrambling of quantum information. Its exponential growth has been proposed to be a diagnostic of quantum chaos, and this growth has been obtained within the AdS/CFT correspondence \cite{nahum2018operator, von2018operator}.
+
+% has at least one conserved quantity, energy
+
+Classically, a Hamiltonian system with $n$ degrees of freedom is integrable if there exist $n$ (the maximum number of) independent conservation laws, which may be used to express the dynamic trajectories as a (however unwieldy) integral from initial conditions. Otherwise, the system is chaotic. The quantum analogue for classical degrees of freedom is also not obvious. For a quantum Hamiltonian with $n$ states, the $n$ projectors onto the energy eigenstates furnish it with already $n$ independently conserved operators, even if it has a well-defined classical limit that exhibits chaos.
+
+In integrable many-body quantum systems, it is believed that the late-time steady state can be described by a generalised Gibbs ensemble constructed from the conserved charges \cite{ilievski2015complete, calabrese2007quantum}. These integrable systems have an infinite number of conserved quantities. Consider the setup of a quantum quench, wherein a system is prepared in the ground state of the Hamiltonian $H_0$, and then time evolved according to a Hamiltonian $H_1$ with a set of conserved charges $\{H_n\}$ that are mutually commuting. Then the density matrix for the generalised Gibbs ensemble is given by
+\begin{equation}
+\rho_\text{GGE} = \frac{1}{Z} \exp\left(-\sum \beta_n H_n\right)
+\end{equation}
+
+where $\beta_n$ are fixed by inital conditions. At late times, the expectations of observables in the state $\ket{\psi(t)} = \exp(-iH_1t) \ket{\psi(0)}$ approach steady state values given by
+\begin{equation}
+\ev{\mathbb{O}} 
+= \lim_{t\rightarrow\infty} \ev{\mathbb{O}}{\psi(t)} 
+= \trace(\rho_\text{GGE} \mathbb{O})
+\end{equation}
+
+
+Random matrix theory (RMT) provides arguably the most general defining features of quantum chaos, effective for quantum systems both with and without classical limits. The Bohigas-Giannoni-Schmit (BGS) conjecture states that chaotic quantum systems have spectral statistics described by RMT at late times \cite{bohigas1984characterization}. The system is chaotic if its level spectrum, at narrow energy scales, resembles the eigenvalue statistics of a random matrix ensemble consistent with the symmetries of the system (see Table \ref{tab_rmt}). This statement is universal in the sense that it is agnostic to the underlying microscopic physics.
+
+The physical interest in RMT first arose from the study of nuclei energy spectra, motivating the introduction of three canonical RMT ensembles for Hermitian matrices \cite{mehta2004random}. Analogous ensembles were later introduced for the unitary matrices, described in Table \ref{tab_rmt}. In the study of Floquet unitary random circuits which do not impose time-reversal symmetry, the random matrix of interest is the unitary evolution operator $U$, and CUE is the relevant RMT class. 
+
+%There is substantial numerical evidence for this correspondence, but theory is nascent, with analytic results typically drawing upon semiclassics. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l l l}
+\\
+\hline
+Ensemble & Invariant under conjugation by: & Physical system \\
+\hline
+CUE & unitary group & broken time-reversal symmetry \\
+COE & orthogonal group & time-reversal symmetric, integer spin \\
+CSE & symplectic group & time-reversal symmetric, half-integer spin \\
+\hline
+\end{tabular}
+\caption{RMT ensembles for unitary matrices, the Circular Unitary Ensemble (CUE), Circular Orthogonal Ensemble (COE), and Circular Symplectic Ensemble (CSE). The analogous Gaussian ensembles GOE, GUE, and GSE describe Hermitian matrices with the same symmetries and relevant physical systems as above \cite{guhr1998random}.}
+\label{tab_rmt}
+\end{table}
+
+RMT does not capture the physical notion of locality. The ground state of some many-body Hamiltonian, such as the local basis in which our random circuits are initialised, is clearly a preferred basis that is not scrambled at early times in a quantum quench. Thus, there exists a natural time scale associated with the emergence of this RMT behaviour. This timescale is the Thouless time $\tau_\text{Th.}$, with the complementary energy scale Thouless energy, $E_\text{Th.} = \hbar / \tau_\text{Th.}$ \cite{chan2018solution, bertini2018exact}. These quantities were first defined in the classical context of disordered conductors by
+\begin{equation}
+\tau_\text{Th.} = \frac{L^2}{D},
+\quad
+E_\text{Th.} = \frac{\hbar D}{L^2}
+\end{equation}
+
+where $D$ is the diffusion constant and $L$ the system size. They show that the Thouless time is classically the timescale for a particle to diffusively traverse the space. In the quantum picture, it is the timescale for a particle to explore the accessible state space, after which level statistics resemble RMT. The Thouless energy, then, quantifies how large an energy window can be, while still retaining the characteristic correlations of RMT. 
+
+
+\subsection{Nearest level spacing}
+
+A quantity of interest in characterising level statistics in many-body problems is the ratio of adjacent energy level spacings, defined by \cite{oganesyan2007localization}
+\begin{equation}
+\tilde{r}_n 
+= \frac{\min(E_{n+1} - E_n, E_n - E_{n-1})}{\max(E_{n+1} - E_n, E_n - E_{n-1})} 
+= \min\left(r_n, \frac{1}{r_n}\right)
+\end{equation}
+
+where 
+\begin{equation}
+r_n = \frac{E_{n+1} - E_n}{E_n - E_{n-1}}
+\end{equation}
+
+and the $E_n$ are enumerated in sorted order. The distribution of these ratios does not depend on the local density of states \cite{atas2013distribution}. 
+
+For a well-thermalised system, the distribution of $r_n$ is expected to correspond to the Wigner-Dyson distribution that characterises the level statistics of RMT, depicted in Figure \ref{fig_rmtrs}. In line with physical intuition, such systems exhibit level repulsion, reflected in the sharp drop-off in $p(r)$ as $r \rightarrow 0$. Thermalisation means that eigenstates interact to split degeneracies in a generic system without fine-tuning. Conversely, quantum integrable systems which fail to thermalise do not have level correlations, reflecting that there exist non-interacting sectors of the Hilbert space. Accordingly, the level distribution is Poisson, such that the probability of finding $k$ levels within an energy window $\omega$ is 
+\begin{equation}
+P(k,\omega) = \frac{(\lambda\omega)^k e^{\lambda\omega}}{k!}
+\end{equation}
+
+where $\lambda$ is some constant reflecting the mean density of states. This distribution is shown in Figure \ref{fig_rmtrs}. There is no level repulsion in the Poisson distribution. Degeneracies occur with finite probability, which increases as $r \rightarrow 0$.  
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth]{fig_levelstats.pdf}
+\caption{Distribution of the level spacing ratio $r$ for GOE, GUE, and GUE. The statistical properties involving a finite number of levels coincide for the circular unitary and Gaussian ensembles, so the GUE $r$ distribution also holds for the CUE relevant to random unitary circuits \cite{mehta2004random}. Figure from \cite{atas2013distribution}.}
+\label{fig_rmtrs}
+\end{figure}
+
+% the limiting n-point correlation function for any finite n being identical for the circular and Gaussian unitary ensembles, all their statistical properties involving a finite number of levels will coincide in the limit N → ∞.
+
+In \cite{oganesyan2007localization}, spectral statistics diagnosed the diffusive to insulating transition for a one-dimensional lattice model of interacting spinless fermions in a random potential. At weak randomness in the diffusive phase, level spacings conformed to the GOE distribution. At strong randomness in the localised phase, the many-body eigenstates are localised in the basis of single-particle orbitals, and level spacings are Poisson distributed. The level statistics interpolate between these two limits as the randomness parameter is tuned through the transition.
+
+\begin{figure}[t]
+\centering
+\subfigure[]{\includegraphics[trim={1cm 0.5cm 1cm 1cm}, clip, width=0.32\textwidth]{fig_energies1.pdf}}
+\subfigure[]{\includegraphics[trim={1cm 0.5cm 1cm 1cm}, clip, width=0.32\textwidth]{fig_energies2.pdf}}
+\subfigure[]{\includegraphics[trim={1cm 0.5cm 1cm 1cm}, clip, width=0.32\textwidth]{fig_energies3.pdf}}
+\subfigure[]{\includegraphics[trim={0.5cm 0.5cm 1cm 1cm}, clip, width=0.32\textwidth]{fig_r1.pdf}}
+\subfigure[]{\includegraphics[trim={0.5cm 0.5cm 1cm 1cm}, clip, width=0.32\textwidth]{fig_r2.pdf}}
+\subfigure[]{\includegraphics[trim={0.5cm 0.5cm 1cm 1cm}, clip, width=0.32\textwidth]{fig_r3.pdf}}
+\caption{Eigenenergies (a,b,c) and corresponding adjacent level spacing ratios $\tilde{r}$ (c,d,e respectively) for three example Clifford Floquets over $L=8$ sites. Insets in (a,b,c) show a narrow energy window, revealing the degeneracy structure. \textsc{nan} count in (d,e,f) records the fraction of $\tilde{r}$ with both numerator and denominator zero.}
+\label{fig_rs}
+\end{figure}
+
+We compute the nearest level spacing ratios $\tilde{r}$ for a Clifford Floquet described at the beginning of this section, comprising two brickwork layers of $C_2$ gates.  It turns out that the distribution of $\tilde{r}$ is not particularly illuminating, due to the large degeneracies of Clifford gates. This is depicted for a few representative Floquets in Figure \ref{fig_rs}.
+
+Unitarity restricts the eigenphases of a circular ensemble to the unit circle on the complex plane, so that eigenergies are $\in [0, 2\pi)$. The unitary group eigenphases have no preferred `direction' on the complex plane. Neither do the Cliffords, as seen in Figure \ref{fig_rs}: the Clifford density of states is flat and the eigenenergies evenly sample the range of Haar unitary eigenvalues. The Clifford energy spectrum features many levels with high degeneracy multiplicity and harmonic spacing, consistent with the high degree of structure and symmetry in the Clifford group. 
+
+The distribution of Clifford level spacing ratios $\tilde{r}$ is discrete, with finite probability only for rational small-denominator $\tilde{r}$, and bears no resemblance to either the Poisson or RMT limits. The distribution formed by ensemble averaging the over a set of circuit realisations is not particularly revealing, so we instead display $\tilde{r}$ for three randomly realisations Clifford Floquets in Figure \ref{fig_rs}. $\tilde{r}$ values of 0 (2-fold degeneracies), 1 (constant level spacings) or \textsc{nan} ($n$-fold degeneracies, $n>2$) are heavily favoured. For many Clifford Floquets, these are the only $\tilde{r}$ that appear. The absence of level repulsion suggests that stabiliser states remain `localised' in non-communicating subspaces. Non-integer rationals with small denominators appear in some Floquets, which we surmise are related to the small-denominator frequencies of the spectral form factor, discussed in the next section.
+
+% [This periodicity is also consistent with the rational adjacent level spacings $\tilde{r}$ of the previous section. Level differences in a Hamlitonian determine the frequency with which a state comprising several energy eigenstates time evolves back to itself. Rational $\tilde{r}$ reflect the return of Paulis strings after a finite, integer-valued time. In particular, small denominator $\tilde{r}$ indicate that these returns happen after a small number of timesteps. ...]
+
+
+
+
+
+\subsection{Spectral form factor}
+
+% A quantity useful for probing the higher moments of the time evolution system is the SFF, 
+
+The spectral form factor, defined as the Fourier transform of the energy level pair correlation function, has been used to study chaotic spectral statistics in quantum many-body systems and black holes \cite{bertini2018exact, gharibyan2018onset, cotler2017black}. Consider the Hamiltonian $H$ associated with the Clifford evolution operator $U=\exp(-iHt)$. $H$ has eigenergies $\{E_n\}_{i=1}^N \in [0, 2\pi)$ by unitarity. The energy density function of this system is given by
+\begin{equation}
+\rho(E) = \sum_{n=1}^N \delta(E-E_n)
+\end{equation}
+
+where $N$ is the size of the Hilbert space. The spectral pair correlation is the two-point function of the energy density. Within some energy interval $\omega$, it is
+\begin{align}
+R(E) &= \int \dd{E} \rho(E) \rho(E+\omega) \\
+&= \sum_{m,n} \int \dd{E} \delta(E-E_m) \delta(E-E_n+\omega) \\
+&= \sum_{m,n} \delta(E_m-E_n+\omega) 
+\end{align}
+
+Fourier transforming and taking the average $\ev{...}$ obtains the spectral form factor
+\begin{align}
+K(t) 
+&= \frac{1}{N^2} \int \dd{\omega} \ev{ e^{-i\omega t} R(E) } \\
+&= \frac{1}{N^2} \sum_{m,n} \ev{ e^{-i(E_m-E_n)t} }
+\end{align}
+
+The spectral form factor is defined with an expectation, because it would otherwise not be self-averaging; this averaging may be made over contiguous time windows or an ensemble of systems with the same symmetry. The results we present use ensemble averages over random Floquet realisations. Note that this normalisation fixes $K(t=0) = N^2$, where $N$ is the size of the Hilbert space. 
+
+In the Floquet random circuit context, it is expedient to express the spectral form factor in terms of the Floquet operator $U = \exp\left(-iHt\right)$. Let $U(t)$ be the operator that evolves a state for $t$ timesteps. Then
+\begin{align}
+K(t) 
+&= \ev{ \left| \sum_{n} e^{-i E_n t} \right|^2 } \\
+&= \ev{ \trace{U(t)} \trace{U^\dagger(t)} }
+\end{align}
+
+In a Floquet model where the single-timestep Floquet layer is described by the gate $U$, $U(t)= U^t$. This expression for $K(t)$ manifests that the spectral form factor probes higher moments of the distribution of $U$. Thus the form factor for Cliffords is not expected to reproduce that for the Haar unitaries. Nevertheless, the form factor for random unitaries is a valuable point of comparison. In RMT, unitary $N \times N$ matrices from the CUE have spectral form factor \cite{mehta2004random}
+\begin{equation}
+K(t) = 
+\begin{cases}
+N^2 & t=0 \\ 
+t 	& 0 < t \leq N \\ 
+N 	& N \leq t
+\end{cases}
+\label{eq_cuesff}
+\end{equation}
+
+Various physical systems have been shown to manifest this CUE spectral form factor after some finite Thouless time, including coupled qubit systems and the SYK model \cite{gharibyan2018onset, chan2018solution, chan2018spectral}. In \cite{bertini2018exact}, the spectral form factor for a kicked Ising model, a quantum many-body system with no semiclassical limit, is calculated analytically, showing exact agreement with RMT in the thermodynamic limit. \cite{chan2018solution} studied a model of local Floquet unitary quantum circuits, analytically in the limit where the the size of the local Hilbert space $q\rightarrow\infty$, and numerically for small $q$. It was found that the Thouless time is finite in the thermodynamic limit for $d>1$, and grows rapidly with system size for $d=1$. 
+
+We are interested in the spectral form factor for the Clifford Floquets introduced at the beginning of this chapter. Consider a one-dimensional circuit of $L$ sites, whose Hilbert space has dimension $N=2^L$. An expression for the spectral form factor for a quantum circuit, described by unitary operator $U(t)$, is derived in \cite{gharibyan2018onset}. An expression for the operator trace in terms of Pauli strings is first obtained
+\begin{equation}
+\trace(U(t)) = \frac{1}{N} \sum_{j=1}^{N^2} P^\dagger_{j} U(t) P_j
+\end{equation}
+
+where $P_j$ is the basis of phaseless Pauli strings, of which there are $4^L = N^2$. Therefore,
+\begin{equation}
+K(t) =
+\trace \left( U(t) \trace \left( U^\dagger(t) \right) \right) = \frac{1}{N} \sum_{j=1}^{N^2} \trace \left( P^\dagger_{j} U^\dagger(t) P_j U(t) \right)
+\end{equation}
+
+Note that the phaseless Pauli strings are Hermitian, but we don't make the simplification $P_j^\dagger = P_j$ above so that the expression is reminiscent of the inner product over $(\mathbb{C}^{2\times2})^{\otimes n}$ (Section 2.3).
+
+% As discussed in the first section, trace implements an inner product on the state space of Pauli strings, which is patent from that the products of different Pauli matrices are traceless, but the $I^2 = X^2 = Y^2 = Z^2 = I$. Thus Pauli strings, the direct products of $I,X,Y,Z$, are orthonormal modulo phase with this inner product. 
+
+Specialising to Clifford gates, we present a simplification of this expression which may be more efficiently computed. Temporarily abbreviate $U(t)$ to $U$. In the Heisenberg picture, time evolution implemented by $U$ transforms operators $\hat{O} \rightarrow U^\dagger \hat{O} U$. For $U \in \mathcal{C}_L$, $P \rightarrow P' = U^\dagger P U$ is guaranteed to be a Pauli string. By the the orthonormality of $\mathcal{P}_n / U(1)$ under the matrix trace inner product, all terms in the sum vanish except those satisfying
+\begin{equation}
+P' = r P, \quad r \in \{\pm1, \pm i\}
+\end{equation} 
+
+We call these `fixed' strings, alluding to the fact that they form a fixed point set under the action of the particular Clifford Floquet $U$. Actually, $r$ is further restricted by the requirement that $P'$ is Hermitian, because $P^\dagger = P \implies (U^\dagger P U)^\dagger = U^\dagger P U$. So more precisely,
+\begin{equation}
+P' = \pm P
+\end{equation} 
+
+This requirement is consistent the understanding that if a set of stabilisers $S$ fully describes a state $\ket{\psi}$, the time evolved $S$ under $U$ should fully specify the state $U\ket{\psi}$. Because only Hermitian Pauli strings stabilises non-trivial Hilbert spaces, $P'$ must be Hermitian. With these definitions of $P'$ and $r$, we find that
+\begin{align}
+K(t) 
+&= \frac{1}{N} \sum_{j=1}^{N^2} \trace \left(P^\dagger_j P'_j\right) \\
+&= \frac{1}{N} \sum_{\text{fixed strings} \atop \text{under } U(t)} \trace \left(r_j P^\dagger_j P_j\right) \\
+&= \prod_{G(U(t))} (1+r_j)
+\end{align}
+
+where $G(U(t))$ is a (non-unique) group of Pauli strings that generate all the fixed strings under the action of $U(t)$. Finally, we find the spectral form factor for a Clifford gate $U(t)$
+\begin{equation}
+K(t) = 
+\begin{cases}
+2^{\abs{G(U(t))}}, & \text{if } U(t)^\dagger P U(t) = +P, \ \forall P \in G(U(t)) \\
+0, 				   & \text{otherwise}
+\end{cases}
+\label{eq_sffclif}
+\end{equation} 
+
+We reiterate that in a Floquet model where the Floquet block is $U$, $U(t)= U^t$. 
+
+This expression suggests that the Clifford spectral form factor has unusual behaviour. If every generator (and hence every string) of the fixed space picks up a phase $+1$ under $U(t)$, the spectral form factor is the number of fixed strings. Otherwise, $K(t)$ vanishes. The exponential dependence on the number of generators of the fixed space suggests that $K(t)$ has enormous fluctuations.
+
+Because the Hilbert space scales exponentially with $L$, computing $K(t)$ from the trace of a general unitary evolution operator $U(t)$ is infeasible for large system sizes. For the special case of Cliffords, stabiliser technology and our formula reduces this to polynomial time. To compute the spectral form factor for a Clifford Floquet $U$ over $L$ sites, we first find an (unfaithful) representation of $U$, $M(U)$, which is a $2L \times 2L$ matrix over $\mathbb{Z}_2$ satisfying
+\begin{equation}
+M(U) \bar{r}(P) = \bar{r}(U^\dagger P U)
+\end{equation}
+
+where $\bar{r}(P)$ is the $(\mathbb{Z}_2)^{2L}$ representation of the Pauli string modulo phase, introduced in the Preliminaries. $M$ is unfaithful because it does not capture the action of $U$ on the phase of $P$; we do not attempt to do so because the phase transformation is non-linear. 
+
+Then, the space of fixed Pauli strings after $t$ timesteps of Floquet evolution is precisely the 1-eigenspace\footnote{Note that a matrix over $\mathbb{Z}_2$ has eigenvalues $\in\{0,1\}$, but the unitarity of $U$ implies the invertibility of $M(U)$, forbidding 0-eigenvalues.} of $M\left(U^t\right)$, which may be found in time $O(L^3)$. A basis for this 1-eigenspace gives $\bar{r}\left(G\left(U^t\right)\right)$. To determine whether each generating Pauli string $P \in G\left(U^t\right)$ returns with $+1$ phase under $U^t$, we phasefully evolve each generator $P$ by $U$ through $t$ timesteps.
+
+% This can be done by finding the column echelon form of the matrix that is $M(U)$ augmented by the identity matrix. see https://en.wikipedia.org/wiki/Kernel_(linear_algebra) computation by Gaussian limination
+
+% $K(0)$ is the square of the Hilbert space size, in this case, that is equivalent to the number of (phaseless) Pauli strings, $4^L$, because at $t=0$, every string is fixed by the identity, 16 eigenvectors generate this entire space. 
+
+
+\begin{figure}
+\centering
+\subfigure[Spectral form factor $K(t)$. Inset: $K(t)$ at early times, highlighting the exponential ramp.]{\includegraphics[trim={3cm 0 3cm 0}, clip, width=0.8\textwidth]{fig_sff_L16.pdf}}
+\subfigure[Number of generators $\ev{\abs{G(U(t))}}$ of the fixed space.]{\includegraphics[trim={3cm 0 3cm 0}, clip, width=0.8\textwidth]{fig_evecs_L16.pdf}}
+\subfigure[Fraction of Floquet realisations for which all fixed strings return with phase $+1$. Inset: narrower time window, highlighting the marked $2^t$, $t\in\mathbb{Z}$ periodicity. This modulo 2 periodicity reflects the $\pm1$ phase oscillation of fixed strings that have $-1$ phase at odd multiples of some time $\tau$, and $+1$ phase at even multiples of $\tau$.]{\includegraphics[trim={3cm 0 3cm 0}, clip, width=0.8\textwidth]{fig_allphase1_L16.pdf}}
+\caption{Spectral form factor and related quantities as a function of time, ensemble averaged over $5\cdot10^3$ realisations of a Clifford Floquet over $L=16$ sites.}
+\label{fig_sff}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{c c c}
+\hline
+\thead{system size} &
+\thead{late time \\ $K(t)$} & 
+\thead{late time \\ $\ev{\abs{G(U(t))}}$} \\
+\hline
+$L=8$ 	& $2^{10.40}$ & 2.73 \\
+$L=16$ 	& $2^{20.40}$ & 4.09 \\
+$L=24$ 	& $2^{32.91}$ & 5.70  \\
+$L=32$ 	& $2^{45.93}$ & 7.39 \\
+$L=48$ 	& $2^{56.86}$ & 10.88 \\
+$L=64$ 	& $2^{83.82}$ & 14.35 \\
+\hline
+\end{tabular}
+\caption{Late time (defined as post-`ramp') circuit-averaged spectral form factors and number of generators of the fixed space for Clifford Floquets. For comparison, the spectral form factor for CUE plateaus to the size of the Hilbert space $N=2^L$ after time $N$. Both $\log\ev{\text{SFF}_\text{Clif.}}$ and $\ev{\abs{G(U(t))}}$ appear to scale roughly linearly with $L$.}
+\label{tab_sff}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics[trim={0 0 0 1cm}, clip, width=0.6\textwidth]{fig_sffcumul.pdf}
+\caption{Cumulative sum of the spectral form factor as a function of time, for several system sizes $L$. Each curve is averaged over $5\cdot10^3$ circuit realisations. The ramp is exponential and its steepness increases with $L$, implying that the ramp time has sub-linear dependence on $L$.}
+\label{fig_sffcumul}
+\end{figure}
+
+We used this method to numerically compute spectral form factors for Clifford Floquets over $L=8,16,24,32,64$ sites. The results for $L=16$ is shown in Figure \ref{fig_sff}, whose subplots show as a function of time the circuit averages of (a) the spectral form factor $K(t)$, (b) the number of generators of the fixed space $\abs{G\left(U^t\right)}$, and (c) the indicator variable that is 1 if all elements of $G\left(U^t\right)$ return with $+1$ phase, and 0 otherwise. Late time averages of the former two statistics appear in Table \ref{tab_sff}, for several system sizes. We do not display plots for other system sizes because they are qualitatively similar; however, their results do appear in Table \ref{tab_sff}.
+
+Figure \ref{fig_sff} confirms the enormous fluctuations of the Clifford $K(t)$ over logarithmic scales, as suggested by Equation \ref{eq_sffclif}. This ensemble-averaged behaviour is dominated by rare circuits with large form factors, which is reflected by the observation that $\ev{\abs{G(U(t))}}$ is much smaller than $K(t)$ (Table \ref{tab_sff}). These fluctuations are not noise in the sense that they are robust to circuit averaging. For example, the independent ensemble averages over two halves of the dataset closely coincide, reproducing the large fluctuations.
+
+%and the scaling of the logarithm standard deviation of the SFF scales linearly with the mean of the SFF
+
+The Clifford $K(t)$ features an exponential ramp with immediate onset. The ramp time scales sub-linearly with $L$ and the ramp slope diverges with $L$, as seen in the cumulative sum of $K(t)$ in Figure \ref{fig_sffcumul}. To contrast, the CUE ramp is linear and has constant slope, such that the ramp time is exponential in $L$ (Equation \ref{eq_cuesff}). Post-ramp, the Clifford SFF fluctuates about a constant mean, which we interpret as the late-time plateau. Table \ref{tab_sff} suggests that the Clifford plateau is $\propto 2^{cL}$ for some $c>1$, higher than the CUE plateau at $2^L$. The immediate onset of the ramp suggests a sub-one-timestep `Thouless time'.\footnote{We use this term loosely, since the Clifford SFF never approaches the CUE SFF, so it does not have a well-defined Thouless time with respect to the CUE ensemble.}
+
+% The Clifford Thouless time could be said to be sub-1, since the ramp begins immediately, but to properly identify it, it is necessary to identify a RMT ensemble for the Cliffords. 
+
+\begin{figure}
+\centering
+\subfigure[Spectral form factor $K(t)$. Its peaks are inherited from $\ev{\abs{G(U(t))}}$ and the fraction of fixed spaces returning with $+1$ phase (subfigures below).]{\includegraphics[trim={2.5cm 0 3cm 0}, clip, width=0.8\textwidth]{fig_sff_ft.pdf}}
+\subfigure[Number of generators $\ev{\abs{G(U(t))}}$ of the fixed space. Marked peaks are $\frac{1}{2}$, $\frac{1}{3}$, $\frac{1}{4}$, $\frac{1}{5}$, $\frac{1}{6}$, $\frac{1}{7}$, $\frac{1}{8}$, $\frac{1}{9}$, $\frac{2}{5}$, $\frac{2}{7}$, $\frac{2}{9}$, $\frac{3}{7}$, $\frac{3}{8}$, $\frac{4}{9}$.]{\includegraphics[trim={2.5cm 0 3cm 0}, clip, width=0.8\textwidth]{fig_evecs_ft.pdf}}
+\subfigure[Fraction of Floquet realisations for which all fixed strings return with phase $+1$. Marked peaks are $\frac{1}{16}$ and its harmonics.]{\includegraphics[trim={2.5cm 0 3cm 0}, clip, width=0.8\textwidth]{fig_allphase1_ft.pdf}}
+\caption{Fourier components of spectral form factor averaged over 5000 Clifford Floquets. The The Nyquist frequency is 0.5, because $K(t)$ is `sampled' once per timestep. We display the Fourier transform of the $L=32$ timeseries of 512 timesteps, but the Fourier spectrum is similar for all $L$. Fourier peaks are marked by dashed vertical lines, and sharpen as the number of points in the timeseries $\rightarrow\infty$.}
+\label{fig_sff_ft}
+\end{figure}
+
+Figure \ref{fig_sff_ft} shows that the timeseries of the spectral form factor has marked peaks in the Fourier domain. First, we note that periodicity in the SFF necessarily arises from the finiteness of $\mathcal{P}_L$. By the pigeonhole principle, the orbit of any Pauli string $P$ under the action of the Clifford Floquet $U$ constitutes a finite cyclic group. Thus, for all Clifford Floquets $U$, $\exists \ \tau \in \mathbb{Z}$ such that $U^\tau = I$; thereafter, $P$ time evolves through the same cycle of Pauli strings. 
+
+Though the Clifford spectral form factor is necessarily periodic, it is remarkable that its periods of oscillation are so small, predominantly 2, 3, 4, 5 timesteps. These are shown by the Fourier peaks at small-denominator rationals (and their higher harmonics) in Figure \ref{fig_sff_ft}. Each Pauli string only explores a small orbit under the Floquet evolution. Thus the Hilbert space is divided into non-interacting sectors, reflecting localisation. We conclude that the Cliffords do not exhibit signatures of conventional chaos.
+
+% A $\tau$ periodicty of the form factor reflects that the returning Pauli strings are in the eigenspace for the primitive $\tau$-th ($+1$ phase) or $\tau/2$-th ($-1$ phase) root of unity .
+
+
+% Along this line of thought, it is combinatorically proven that the dimension of the $a$-eigenspace in a matrix over the finite field $\mathbb{Z}_q$ is $k$ with probability \cite{morrison1999eigenvalues}
+% \begin{equation}
+% \begin{cases}
+% \prod_{r\geq1} \left(1-\frac{1}{q^r}\right) & k=0 \\
+% \frac{q^k}{(q-1)^2 ... (q^k-1)^2} \prod_{r\geq1} \left(1-\frac{1}{q^r}\right) & k>0
+% \end{cases}
+% \end{equation}
+
+
+
+It is illuminating to compare these results to the spectral form factor for a Clifford Floquet system with a conserved charge. A particularly simple example is the Floquet architecture of Figure \ref{fig_floquet}, where each $C_2$ block is restricted to either a SWAP or iSWAP, followed by a single qubit phase gate with probability half. This circuit conserves the number of $\ket{0}$ states (interpreted as a spin-$1/2$ chain, the circuit conserves the number of up spins). Its circuit averaged spectral form factor is displayed in Figure \ref{fig_concharge}.
+
+In quantum integrable systems, entanglement spreading may be associated with ballistically propagating quasiparticles \cite{calabrese2007quantum}. Here the quasiparticles are up spins which traverse the chain through swap gates. In time $L/2$, the quasiparticles return to their initial positions, but possibly with phase $i$. In time $2L$, they return to their initial positions including phase. This behaviour is responsible for the strong periodicity in this non-ergodic spectral form factor, which demonstrates complete revivals in time $2L$. This trend emerges averaging over only a few (order of 10) circuit realisations. Evidently, despite its dissimilarities to the CUE, random Clifford Floquets have many more signatures of chaos than this conserved-charge Clifford Floquet, whose spectral form factor has no ramp and no chaotic fluctuations.
+
+\begin{figure}
+\centering
+\includegraphics[trim={1cm, 1cm, 3cm, 1cm}, clip, width=0.9\textwidth]{fig_concharge.pdf}
+\caption{Spectral form factor (in the time domain) for a model of Floquet Clifford circuits with conserved up spin, for three different system sizes $L$, time-evolved for $6L$. The system is non-ergodic, and demonstrates complete revivals in $2L$ timesteps.}
+\label{fig_concharge}
+\end{figure}
+
+To summarise, we studied in this section the spectral statistics of Clifford Floquets. We found that the enery spectrum of Cliffords typically features high degeneracy and harmonicity (constant level spacing). Their nearest neighbour level spacing ratios are highly non-generic, resembling neither Poisson nor Wigner-Dyson. We introduced an efficient method for computing Clifford spectral form factors and found that this form factor has an exponential ramp and a late-time value higher than that of the CUE. Moreover, its small-period oscillations suggest that the many-body Hilbert space is partitioned into uncommunicating sectors; thus stabiliser circuits do not thermalise under Clifford evolution in the conventional sense.
+
+
+\clearpage
+\section{Outlook}
+\epigraph{\itshape ``Pr\'epar\'e avec soin, il est d'un go\^ut exquis, ratraichissant en \'et\'e, stimulant en toute saison. La fermentation ajoute aux l\'egumens des qualit\'es nouvelles, se rajoutant \`a celles des l\'egumes frais, facilitant la digestion et en faisant un r\'egulateur intestinal irrempla\c able...''}
+
+Situated within the study of non-equilibrium many-body physics and quantum information, this work approaches two research thrusts: how is the familiar measurement-induced entanglement transition modified when projective measurements are deferred to the end of unitary dynamics, and what are the ergodic spectral signatures of the Clifford circuits widely used to study this class of problems?
+
+Random circuits evolving under Clifford gates serve as the setting for our investigation of measurement-induced criticality. We introduced a model of delayed measurements, which captures the development of entanglement between a measurement apparatus and the system it probes. We find that the transition at $p_c$ separating area and volume law phases does not exist in the pre-measurement state of this model. Rather, bipartite entanglement entropies grow time-law for $p\neq0$, and there is a system-size-independent correlation length that diverges as $p$ approaches 0. We extracted the critical exponent for this phenomenon. As the ancillae are measured, entanglement localised in the ancillae `migrates' non-monotonically into the principal circuit to create long-range entanglement when $p<p_c$. We expect these findings on Clifford circuits to hold for generic Haar unitary evolution.
+
+The extensive use of stabiliser technology to study problems involving random unitary dynamics motivated our examination of Clifford spectral statistics. Spectral properties of a system are expected to give insights about its thermalising properties via random matrix theory. We found that Floquet random Cliffords have a high degree of level degeneracy and harmonicity, and their ensemble-averaged spectral form factor has an exponential ramp with immediate onset, sub-linear ramp time, and steady-state average greater than that for the CUE. Many stabiliser states have only small orbits under the action of Clifford Floquets, suggesting that there is a preferred basis in the Hilbert space whose structure is not lost to thermalisation. Thus Cliffords do not exhibit many conventional markers of ergodicity. 
+
+This work would benefit from further exploration in several directions. We enumerate a few such ideas below.
+
+The renormalisation group teaches us regarding dimensionality, more is (or can be) different. There is a natural, higher-dimensional generalisation of the measurement-induced criticality problem, which may be studied in $(2+1)$-- and $(3+1)$--dimensional circuits. This direction has the view of developing a mean field theoretic understanding for transitions in higher dimensions, at which novel phenomena can emerge. In partiulcar, we note that localisation effects are generally stronger at low spatial dimensions.
+
+% We note that localisation effects are stronger at low spatial dimension $d$, and diffusive behaviour is $d$-dependent: Brownian motion is point recurrent in $d=1$ dimension, neighbourhood recurrent but not point recurrent in the marginal $d=2$ dimension, and transient at higher $d\geq3$.
+
+In the study of delayed measurements, we examined space-partitioning cuts that capture mutual information between spatially distant regions, and identified the relevant correlation length. Future work should consider the analogous time-partitioning cut to probe inter-temporal correlations of the ancillae. Naively, we may speculate that ancillae far separated in time are well correlated in the former $p>p_c$ area-law phase, but weakly correlated in the former $p<p_c$ volume-law phase. Time-cuts may moreover clarify the non-monotonic dependence of the (spatial) mutual information on the fraction of ancillae measured. This non-monotonicity is mysterious; further work is needed to understand how the entanglement migrates or collapses as the ancilae are measured.
+
+Concerning the Clifford spectral form factor, we may ask, what is the random matrix ensemble associated with the Clifford group? The (unfaithful) representation of Clifford transformations as matrices in $\mathbb{Z}_2$ suggest that RMT-inspired insights might come from statistics about invertible matrices over finite fields. In particular, the dimension of the 1-eigenspace of the binary representation of some Clifford Floquet $U$ gives $\abs{G\left(U\right)}$. Field extension to the $t$-th roots of unity in $\mathbb{Z}_2$ could allow us to comment on $\abs{G\left(U^t\right)}$. This line of questioning would address whether the representation of $U^t$ at late times $t$ resembles a random $\mathbb{Z}_2$ matrix without correlations between matrix elements. Additionally, it may be promising to better understand the internal structure of a Pauli string and its orbit under the action of the Clifford Floquet. To what extent are the orbits localised in position space, acting non-trivially only on a few close sites, or is their support extended over the spin chain? Many such questions remain on the path to better understanding dynamics on stabiliser circuits.
+
+
+
+
+
+
+% Finally, we suggest that a RMT approach to understanding the Clifford spectral form factor could begin at statistics about the dimension of the 1-eigenspace in a random invertible matrix over the finite field $\mathbb{Z}_2$. Let $M(U)$ be the binary representation of some Clifford Floquet $U$. By field extension of $\mathbb{Z}_2$ to include all $t$ $t$-th roots of unity $\{z\}$, $\abs{G\left(U^t\right)}$ is given by the number of roots (with multiplicity) of the characteristic polynomial of $U$ which are in $\{z\}$. This account does not consider the phase, but because any string fixed at time $t$ is guaranteed to be fixed at $2t$, and have phase $+1$, statistics about the late time Clifford SFF, following Equation \ref{eq_sffclif}, could perhaps be inferred with some futher correction. 
+
+
+
+\newpage
+\begin{appendices}
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
+% \addcontentsline{toc}{section}{Appendices}
+
+% \section{Appendix}
+
+\section{Simulation of stabiliser circuits}
+
+First, we provide more detail on the binary representation of phaseful Hermitian Pauli strings introduced in Section 1.4. Consider two phaseful Hermitian Pauli strings $g_1$ with $r(g_1)=(z_{11},...,x_{11},... | r_1)$ and $g_2$ with $r(g_2)=(z_{21},...,x_{21}, ... | r_2)$. Their Hermiticity ensures that $r_1,r_2 \in \{0,1\}$. Their product $g_1 g_2$ has binary representation
+\begin{equation}
+r(g_1 g_2) = (z_{11} \oplus z_{21}, ..., x_{11} \oplus x_{21}, ... \ | \ r_1 \star r_2 )
+\end{equation}
+
+where $\oplus$ is addition modulo 2, and the non-linear phase transformation is
+\begin{equation}
+2 r_1 \star r_2 = \left(2r_1 + 2r_2 + \sum_{j=1}^L g(z_{1j}, x_{1j}, z_{2j}, x_{2k})\right) \mod 4
+\end{equation}
+
+where
+\begin{equation}
+g(z_1, x_1, z_2, x_2) = 
+\begin{cases}
+0, 			 & z_1 = x_1 = 0 \\
+z_2-x_2,	 & z_1 = x_1 = 1 \\
+z_2(2x_2-1), & z_1 = 0, x_1 = 1 \\
+x_2(1-2z_2), & z_1 = 1, x_1 = 0 
+\end{cases}
+\end{equation}
+
+The function $g$ returns the phase to which $i$ is raised (either 0, 1, or $-1$) in the product of the Pauli matrices represented by $z_1 x_1$ and $z_2 x_2$. Note that since $g_1g_2$ is Hermitian, $r_1 \star r_2 \in \{0,1\}$. This implies the RHS with the sum is 0 or 2 modulo 4 \cite{aaronson2004improved}.
+
+Aaronson and Gottesman \cite{aaronson2004improved} provide efficient algorithms updating a stabiliser description of a quantum circuit, evolving under Clifford gates and subject to projective measurements in the standard local basis. For system size $L$, every gate update requires $O(L)$, measurement with random outcome $O(L^2)$, and measurement with deterministic outcome $O(L^3)$.
+
+To simulate a stabiliser circuit, we store and update $L$ stabiliser generators (which fully and non-redundantly determine this state up to phase), and $L$ destabiliser generators, such that they together generate $\mathcal{P}_n$. The destabilisers are chosen such that they commute with each other and all but one of the stabilisers, with which it anticommutes. These $2L$ Pauli strings are arranged in a tableau requiring space $O(L^2)$, where each $r(s)$ forms a row.
+
+\renewcommand*{\arraystretch}{1.2}
+\begin{equation}
+\begin{bmatrix}
+z_{11} & \cdots & z_{1L} & x_{11} & \cdots & x_{1L} & r_1\\
+\vdots & \ddots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+z_{L1} & \cdots & z_{LL} & x_{L1} & \cdots & x_{LL} & r_L\\
+z_{(L+1)1} & \cdots & z_{(L+1)L} & x_{(L+1)1} & \cdots & x_{(L+1)L} & r_{L+1}\\
+\vdots & \ddots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+z_{(2L)1} & \cdots & z_{(2L)L} & x_{(2L)1} & \cdots & x_{(2L)L} & r_{2L} \\
+\end{bmatrix}
+\end{equation}
+\renewcommand*{\arraystretch}{1.5}
+
+The stabilisers appear in rows $1,...,L$ and the destabilisers in rows $L+1,...,2L$. Initialisation in the product state of all $\ket{0}$ is represented by the identity matrix with an additional, uniformly zero, phase column.
+
+%In Aaronson's algorithm, tableau invariants ensure that in the circumstances in which $g$ is used in the stabiliser simulation, $g_1$ and $g_2$ commute so that $2 r_1 \star r_2 \in \{0, 2\}$. Aaronson's algorithm maintains the following commutation invariants: the stabilisers commute with each other, and with all destabilisers except for the one corresponding destabiliser. Since the algorithm maintains an exact description of a pure state, the tableau sans phase column is always full rank.
+
+\cite{aaronson2004improved} provides compact tableau algorithms for evolving a stabiliser state under CNOT, Hadamard, or phase, which together generate the Clifford group. However, to sample randomly over the Cliffords in our brickwork architecture, we require tableau update rules for all $C_2$ gates. To accomplish this, we first enumerate all of the $\abs{C_2} = 11520$ independent two-qubit Cliffords following \cite{barendssupplementary}, which provides an explicit factorisation of each $C_2$ gate into control-Zs, Paulis, and $\pi/2$ rotations about the $x$ and $y$ axes of the Bloch sphere. The latter are implemented by the unitaries
+\begin{equation}
+R_x(\pi/2) = \exp(-i\pi X/4)
+\end{equation}
+and analogously for $y$. From the unitary representation of each gate, we derive its action on all phaseful two-qubit Pauli strings. Encoded as an operation on a $\mathbb{Z}_2$ array, this informs its update rule on the stabiliser tableau. 
+
+Measurements of $g \in \mathcal{P}_L$ for a stabiliser state stabilised by $S$ is discussed in \cite{nielsen2002quantum}. There are two cases: the measurement outcome is determinate when $g$ commutes with all $g_i \in S$, or random when it anticommutes with one or more $g_i \in S$. The tableau manipulations that implement measurement of $g=Z_i$ for some site $i$ is described in \cite{aaronson2004improved}; we do not reproduce them here. For our purposes, the state update due to a measurement is important but the measurement outcome itself is not, so we may omit the phase column and destabiliser rows $L+1,...,2L$ of the tableau. This reduces the simulation of a deterministic measurement to constant time, and of a non-deterministic measurement to $O(L)$ time (in addition to the $O(L)$ time to check whether the outcome is deterministic or random). 
+
+
+\begin{comment}
+
+Now to implement projective measurements. Suppose a $L$-qubit stabiliser state is stabilised by $S=\ev{g_j}_{j=1}^L$. We are interested in measuring $g \in \mathcal{P}_L$. Suppose WLOG $g$ has no coefficient $-1$ or $\pm i$. There are two cases:
+
+(1) $g$ commutes with all $g \in S$. Then $g \in S$ and the measurement yields $+1$, or $-g \in S$ and the measurement yields $-1$ [Nielson]. So this case is a measurement deterministic outcome. For our purposes, we are interested in special case where $g=Z_a$ for some site $a$. In the tableau, this is equivalent to checking all the rows $i$ for which $x_{ia}=1$, multiplying together the stabilisers they represent, and checking the phase of that
+
+Suppose we have a state stabilised by $S$, set of generators in $\mathcal{P}_n$. To measure $h \in \mathcal{P}_n$, assume WLOG $h$ has no coefficeint of $-1$ or $\pm i$. There are two cases: (1) $h$ commutes with all $g \in S$, (2) $h$ anticommutes with exactly one $g \in S$, say $g_1$ (this can be done WLOG, by replacing any other $g_j$ for which $\{h,g_j\}=0$ with $g_1 g_j$). Following measurement, the generators describing the state transform as
+
+Case (1): $g$ or $-g$ is in the stabiliser, because $g^2=I$ and $g\ket{\psi} \in V_S$.
+
+Case (2): $g$ anticommutes witht some $g \in S$, say $g_1$ by relabelling. in the stabiliser generators $g_1$ is replaced by $g$ or $-g$ depending on whether the measurement yields $+1$ or $-1$.
+
+\end{comment}
+
+
+
+
+
+\section{Entanglement entropy of stabiliser states}
+
+In the Preliminaries, we saw that a pure $L$-qubit stabiliser state is fully specified by $L$ independent stabilisers $\{g_i\}_{i=1}^L$ that generate the stabiliser set $S$. As a corollary, the density operator for this state is
+\begin{equation}
+\rho = \frac{1}{2^L} \sum_{s \in S} s = \frac{1}{2^L} \prod_{i=1}^L (I + g_i)
+\end{equation}
+
+% Since $s\ket{\psi} = \ket{\psi}$ $\forall s \in S$, and the pure state density matrix $\rho = \dyad{\psi}{\psi}$ obviously stabilises $\ket{\psi}$.
+
+For a bipartition $A$ on this state, the reduced density matrix is
+\begin{equation}
+\rho_A 
+= \frac{1}{2^{\abs{A}}} \sum_{s \in S_A} s 
+= \frac{1}{2^{\abs{A}}} \prod_{i=1}^{r_A} (I + g_i)
+\end{equation}
+where $S_A \subset S$ is the stabiliser group on $A$ with generators $\{g_i\}_{i=1}^{r_A}$. $S_A$ comprises $s \in S$ that are trivial (equal to the identity) when restricted to $\bar{A}$. $r_A$ is the size of a minimal generating set for $S_A$.
+
+These expressions manifest that the eigenvalues of a density matrix are 0 or 1; therefore, the spectrum of Renyi entropies is degenerate for stabiliser states. $r_A$ generators act trivially on $\bar{A}$ and do not contribute to the entropy. The bipartite entropy reduces to \cite{li2019measurement, gullans2019dynamical}
+\begin{equation}
+S(A) = \abs{A} - r_A
+\end{equation}
+
+To find $r_A$, consider $\rho$, in its stabiliser representation as a $2L\times2L$ binary matrix, restricted to the sites in $\bar{A}$. By row reduction in the field $\mathbb{Z}_2$ on this $L \times 2\abs{\bar{A}}$ matrix, one can find the number of generators that are equal to the identity on $\bar{A}$.
+
+The choice of generators for the stabiliser of a quantum state is a gauge choice. To compute bipartite entropies, the clipped gauge is a convenient choice \cite{li2019measurement, nahum2017quantum, gullans2019dynamical}. Let the left endpoint $l(g)$ of a stabiliser be the leftmost site at which a stabiliser $g$ acts non-trivially, and analogously for the right endpoint $r(g)$. The clipped gauge satisfies the condition
+\begin{equation}
+\forall x \quad \sum_g \left(\delta_{l(g),x} + \delta_{r(g),x} \right) = 2
+\end{equation}
+
+Over the entire circuit, there are a total of $2L$ endpoints as expected. Note that this gauge does not uniquely specify a set of generators $\{g\}$. A tableau of stabilisers can be manipulated into clipped gauge in $O(L^3)$ time by a variant of binary row reduction. Then the entanglement entropy of a bipartition $A$ is efficiently calculated in $O(L)$ time for all cuts, by counting the number of clipped gauge stabilisers that cross the cut. Precisely,
+\begin{equation}
+S(A) = \frac{1}{2} \sum_g \left(\delta_{l(g) \in A} \delta_{r(g) \in \bar{A}} + \delta_{l(g) \in \bar{A}} \delta_{r(g) \in A}\right)
+\end{equation}
+
+These algorithms for computing the bipartite entanglement entropy were implemented to produce the results appearing in this thesis.
+
+\end{appendices}
+
+\newpage
+\nocite{*}
+\small
+\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{h-physrev}
+\bibliography{bib}
+
+
+\end{document}

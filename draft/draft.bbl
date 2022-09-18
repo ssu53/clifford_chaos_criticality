@@ -1,0 +1,240 @@
+\begin{thebibliography}{10}
+
+\bibitem{vidal2003efficient}
+G.~Vidal, {\em Efficient classical simulation of slightly entangled quantum
+  computations},
+\newblock Physical review letters {\bf 91}, 147902 (2003).
+
+\bibitem{hastings2007area}
+M.~B. Hastings, {\em An area law for one-dimensional quantum systems},
+\newblock Journal of Statistical Mechanics: Theory and Experiment {\bf 2007},
+  P08024 (2007).
+
+\bibitem{abanin2019colloquium}
+D.~A. Abanin, E.~Altman, I.~Bloch, and M.~Serbyn, {\em Colloquium: Many-body
+  localization, thermalization, and entanglement},
+\newblock Reviews of Modern Physics {\bf 91}, 021001 (2019).
+
+\bibitem{nandkishore2015many}
+R.~Nandkishore and D.~A. Huse, {\em Many-body localization and thermalization
+  in quantum statistical mechanics},
+\newblock Annu. Rev. Condens. Matter Phys. {\bf 6}, 15 (2015).
+
+\bibitem{ilievski2015complete}
+E.~Ilievski {\em et~al.}, {\em Complete generalized Gibbs ensembles in an
+  interacting theory},
+\newblock Physical review letters {\bf 115}, 157201 (2015).
+
+\bibitem{calabrese2007quantum}
+P.~Calabrese and J.~Cardy, {\em Quantum quenches in extended systems},
+\newblock Journal of Statistical Mechanics: Theory and Experiment {\bf 2007},
+  P06008 (2007).
+
+\bibitem{skinner2019measurement}
+B.~Skinner, J.~Ruhman, and A.~Nahum, {\em Measurement-induced phase transitions
+  in the dynamics of entanglement},
+\newblock Physical Review X {\bf 9}, 031009 (2019).
+
+\bibitem{li2019measurement}
+Y.~Li, X.~Chen, and M.~Fisher, {\em Measurement-driven entanglement transition
+  in hybrid quantum circuits},
+\newblock arXiv preprint arXiv:1901.08092  (2019).
+
+\bibitem{chan2019unitary}
+A.~Chan, R.~M. Nandkishore, M.~Pretko, and G.~Smith, {\em Unitary-projective
+  entanglement dynamics},
+\newblock Physical Review B {\bf 99}, 224307 (2019).
+
+\bibitem{sekino2008fast}
+Y.~Sekino and L.~Susskind, {\em Fast scramblers},
+\newblock Journal of High Energy Physics {\bf 2008}, 065 (2008).
+
+\bibitem{nahum2017quantum}
+A.~Nahum, J.~Ruhman, S.~Vijay, and J.~Haah, {\em Quantum entanglement growth
+  under random unitary dynamics},
+\newblock Physical Review X {\bf 7}, 031016 (2017).
+
+\bibitem{choi1903quantum}
+S.~Choi, Y.~Bao, X.~Qi, and E.~Altman, {\em Quantum error correction in
+  scrambling dynamics and measurement induced phase transition},
+\newblock arXiv preprint arXiv:1903.05124 .
+
+\bibitem{gharibyan2018onset}
+H.~Gharibyan, M.~Hanada, S.~H. Shenker, and M.~Tezuka, {\em Onset of random
+  matrix behavior in scrambling systems},
+\newblock Journal of High Energy Physics {\bf 2018}, 124 (2018).
+
+\bibitem{garcia2016spectral}
+A.~M. Garc{\'\i}a-Garc{\'\i}a and J.~J. Verbaarschot, {\em Spectral and
+  thermodynamic properties of the Sachdev-Ye-Kitaev model},
+\newblock Physical Review D {\bf 94}, 126010 (2016).
+
+\bibitem{chan2018solution}
+A.~Chan, A.~De~Luca, and J.~Chalker, {\em Solution of a minimal model for
+  many-body quantum chaos},
+\newblock Physical Review X {\bf 8}, 041019 (2018).
+
+\bibitem{nielsen2002quantum}
+M.~A. Nielsen and I.~Chuang,
+\newblock Quantum computation and quantum information, 2002.
+
+\bibitem{preskill1998lecture}
+J.~Preskill, {\em Lecture notes for physics 229: Quantum information and
+  computation},
+\newblock California Institute of Technology {\bf 16} (1998).
+
+\bibitem{gottesman1998heisenberg}
+D.~Gottesman, {\em The Heisenberg representation of quantum computers},
+\newblock arXiv preprint quant-ph/9807006  (1998).
+
+\bibitem{bravyi2016improved}
+S.~Bravyi and D.~Gosset, {\em Improved classical simulation of quantum circuits
+  dominated by Clifford gates},
+\newblock Physical review letters {\bf 116}, 250501 (2016).
+
+\bibitem{dankert2009exact}
+C.~Dankert, R.~Cleve, J.~Emerson, and E.~Livine, {\em Exact and approximate
+  unitary 2-designs and their application to fidelity estimation},
+\newblock Physical Review A {\bf 80}, 012304 (2009).
+
+\bibitem{gross2007evenly}
+D.~Gross, K.~Audenaert, and J.~Eisert, {\em Evenly distributed unitaries: On
+  the structure of unitary designs},
+\newblock Journal of mathematical physics {\bf 48}, 052104 (2007).
+
+\bibitem{webb2015clifford}
+Z.~Webb, {\em The Clifford group forms a unitary 3-design},
+\newblock arXiv preprint arXiv:1510.02769  (2015).
+
+\bibitem{gullans2019dynamical}
+M.~J. Gullans and D.~A. Huse, {\em Dynamical purification phase transition
+  induced by quantum measurements},
+\newblock arXiv preprint arXiv:1905.05195  (2019).
+
+\bibitem{tang2020measurement}
+Q.~Tang and W.~Zhu, {\em Measurement-induced phase transition: A case study in
+  the nonintegrable model by density-matrix renormalization group
+  calculations},
+\newblock Physical Review Research {\bf 2}, 013022 (2020).
+
+\bibitem{zabalo2020critical}
+A.~Zabalo {\em et~al.}, {\em Critical properties of the measurement-induced
+  transition in random quantum circuits},
+\newblock Physical Review B {\bf 101}, 060301 (2020).
+
+\bibitem{bao2020theory}
+Y.~Bao, S.~Choi, and E.~Altman, {\em Theory of the phase transition in random
+  unitary circuits with measurements},
+\newblock Physical Review B {\bf 101}, 104301 (2020).
+
+\bibitem{li2018quantum}
+Y.~Li, X.~Chen, and M.~P. Fisher, {\em Quantum Zeno effect and the many-body
+  entanglement transition},
+\newblock Physical Review B {\bf 98}, 205136 (2018).
+
+\bibitem{jian2019measurement}
+C.-M. Jian, Y.-Z. You, R.~Vasseur, and A.~W. Ludwig, {\em Measurement-induced
+  criticality in random quantum circuits},
+\newblock arXiv preprint arXiv:1908.08051  (2019).
+
+\bibitem{vasseur2019entanglement}
+R.~Vasseur, A.~C. Potter, Y.-Z. You, and A.~W. Ludwig, {\em Entanglement
+  transitions from holographic random tensor networks},
+\newblock Physical Review B {\bf 100}, 134203 (2019).
+
+\bibitem{gullans2019scalable}
+M.~J. Gullans and D.~A. Huse, {\em Scalable probes of measurement-induced
+  criticality},
+\newblock arXiv preprint arXiv:1910.00020  (2019).
+
+\bibitem{zhou2019single}
+S.~Zhou, Z.-C. Yang, A.~Hamma, and C.~Chamon, {\em Single T gate in a Clifford
+  circuit drives transition to universal entanglement spectrum statistics},
+\newblock arXiv preprint arXiv:1906.01079  (2019).
+
+\bibitem{nahum2018operator}
+A.~Nahum, S.~Vijay, and J.~Haah, {\em Operator spreading in random unitary
+  circuits},
+\newblock Physical Review X {\bf 8}, 021014 (2018).
+
+\bibitem{von2018operator}
+C.~Von~Keyserlingk, T.~Rakovszky, F.~Pollmann, and S.~L. Sondhi, {\em Operator
+  hydrodynamics, OTOCs, and entanglement growth in systems without conservation
+  laws},
+\newblock Physical Review X {\bf 8}, 021013 (2018).
+
+\bibitem{bohigas1984characterization}
+O.~Bohigas, M.-J. Giannoni, and C.~Schmit, {\em Characterization of chaotic
+  quantum spectra and universality of level fluctuation laws},
+\newblock Physical Review Letters {\bf 52}, 1 (1984).
+
+\bibitem{mehta2004random}
+M.~L. Mehta,
+\newblock {\em Random matrices} (Elsevier, 2004).
+
+\bibitem{guhr1998random}
+T.~Guhr, A.~M{\"u}ller-Groeling, and H.~A. Weidenm{\"u}ller, {\em Random-matrix
+  theories in quantum physics: common concepts},
+\newblock Physics Reports {\bf 299}, 189 (1998).
+
+\bibitem{bertini2018exact}
+B.~Bertini, P.~Kos, and T.~Prosen, {\em Exact spectral form factor in a minimal
+  model of many-body quantum chaos},
+\newblock Physical review letters {\bf 121}, 264101 (2018).
+
+\bibitem{oganesyan2007localization}
+V.~Oganesyan and D.~A. Huse, {\em Localization of interacting fermions at high
+  temperature},
+\newblock Physical review b {\bf 75}, 155111 (2007).
+
+\bibitem{atas2013distribution}
+Y.~Atas, E.~Bogomolny, O.~Giraud, and G.~Roux, {\em Distribution of the ratio
+  of consecutive level spacings in random matrix ensembles},
+\newblock Physical review letters {\bf 110}, 084101 (2013).
+
+\bibitem{cotler2017black}
+J.~S. Cotler {\em et~al.}, {\em Black holes and random matrices},
+\newblock Journal of High Energy Physics {\bf 2017}, 118 (2017).
+
+\bibitem{chan2018spectral}
+A.~Chan, A.~De~Luca, and J.~Chalker, {\em Spectral statistics in spatially
+  extended chaotic quantum many-body systems},
+\newblock Physical review letters {\bf 121}, 060601 (2018).
+
+\bibitem{aaronson2004improved}
+S.~Aaronson and D.~Gottesman, {\em Improved simulation of stabilizer circuits},
+\newblock Physical Review A {\bf 70}, 052328 (2004).
+
+\bibitem{barendssupplementary}
+R.~Barends {\em et~al.}, {\em Supplementary Information for “Superconducting
+  quantum circuits at the surface code threshold for fault tolerance”}.
+
+\bibitem{garcia2012efficient}
+H.~J. Garcia, I.~L. Markov, and A.~W. Cross, {\em Efficient inner-product
+  algorithm for stabilizer states},
+\newblock arXiv preprint arXiv:1210.6646  (2012).
+
+\bibitem{zhang2019information}
+Y.-L. Zhang {\em et~al.}, {\em Information scrambling in chaotic systems with
+  dissipation},
+\newblock Physical Review B {\bf 99}, 014303 (2019).
+
+\bibitem{bravyi2019simulation}
+S.~Bravyi {\em et~al.}, {\em Simulation of quantum circuits by low-rank
+  stabilizer decompositions},
+\newblock Quantum {\bf 3}, 181 (2019).
+
+\bibitem{chan2019minimal}
+A.~Chan,
+\newblock {\em Minimal models of quantum chaotic many-body systems},
+\newblock PhD thesis, University of Oxford, 2019.
+
+\bibitem{morrison1999eigenvalues}
+K.~Morrison, {\em Eigenvalues of random matrices over finite fields},
+\newblock preprint  (1999).
+
+\bibitem{mezei2017entanglement}
+M.~Mezei and D.~Stanford, {\em On entanglement spreading in chaotic systems},
+\newblock Journal of High Energy Physics {\bf 2017}, 65 (2017).
+
+\end{thebibliography}
